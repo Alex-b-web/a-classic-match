@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { BOOKS } from "@/data/books";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
@@ -7,12 +8,12 @@ import { useShelf } from "@/hooks/use-shelf";
 export const Route = createFileRoute("/list")({
   head: () => ({
     meta: [
-      { title: "My Reading List — The Standing Canon" },
+      { title: "My Reading List — A Classic Match" },
       {
         name: "description",
         content: "The classics you saved, with page counts, authors and a buy link for each.",
       },
-      { property: "og:title", content: "My Reading List — The Standing Canon" },
+      { property: "og:title", content: "My Reading List — A Classic Match" },
       { property: "og:description", content: "The classics you saved, ready to buy." },
     ],
   }),
