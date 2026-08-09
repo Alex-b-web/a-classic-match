@@ -47,7 +47,7 @@ function Index() {
           <img
             src={logoAsset.url}
             alt="A Classic Match"
-            className="size-6 rounded-full"
+            className="size-7"
             loading="eager"
           />
           A Classic Match
