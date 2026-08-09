@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, BookOpen, Library } from "lucide-react";
+import { ArrowRight, Library } from "lucide-react";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { QUESTIONS, recommend } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
@@ -8,13 +9,13 @@ import { useShelf } from "@/hooks/use-shelf";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "The Standing Canon — Find Your Next Classic" },
+      { title: "A Classic Match — Find Your Next Classic" },
       {
         name: "description",
         content:
           "Six questions, ten classic novels chosen for you — with covers, page counts, authors and the year each was written.",
       },
-      { property: "og:title", content: "The Standing Canon — Find Your Next Classic" },
+      { property: "og:title", content: "A Classic Match — Find Your Next Classic" },
       {
         property: "og:description",
         content: "Six questions, ten classic novels chosen for you.",
@@ -43,8 +44,13 @@ function Index() {
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
       <header className="flex items-center justify-between">
         <span className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground">
-          <BookOpen className="size-4 text-accent" />
-          The Standing Canon
+          <img
+            src={logoAsset.url}
+            alt="A Classic Match"
+            className="size-6 rounded-full"
+            loading="eager"
+          />
+          A Classic Match
         </span>
         <Link
           to="/list"
