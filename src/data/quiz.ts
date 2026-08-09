@@ -70,7 +70,8 @@ export function recommend(answers: Record<string, number>): Book[] {
   const chosen: string[] = [];
   for (const q of QUESTIONS) {
     const i = answers[q.id];
-    if (i !== undefined) chosen.push(...q.options[i].tags);
+    const opt = i === undefined ? undefined : q.options[i];
+    if (opt) chosen.push(...opt.tags);
   }
   const weight = new Map<string, number>();
   chosen.forEach((t, i) => weight.set(t, (weight.get(t) ?? 0) + (i < 3 ? 3 : 2)));
