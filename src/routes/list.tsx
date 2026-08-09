@@ -28,9 +28,20 @@ function ListPage() {
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
+      <header className="flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground">
+          <img
+            src={logoAsset.url}
+            alt="A Classic Match"
+            className="size-6 rounded-full"
+            loading="eager"
+          />
+          A Classic Match
+        </Link>
+      </header>
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+        className="mt-8 inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
       >
         <ArrowLeft className="size-4" /> Back to the quiz
       </Link>
