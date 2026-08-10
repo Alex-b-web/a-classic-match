@@ -52,12 +52,20 @@ function Index() {
           />
           A Classic Match
         </span>
-        <Link
-          to="/list"
-          className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
-        >
-          <Library className="size-4" /> List
-        </Link>
+        <nav className="flex items-center gap-4">
+          <Link
+            to="/browse"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            Browse
+          </Link>
+          <Link
+            to="/list"
+            className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            <Library className="size-4" /> List
+          </Link>
+        </nav>
       </header>
 
       {stage === "quote" && (
