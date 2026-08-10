@@ -38,6 +38,12 @@ function ListPage() {
           />
           A Classic Match
         </Link>
+        <Link
+          to="/browse"
+          className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+        >
+          Browse
+        </Link>
       </header>
       <Link
         to="/"
