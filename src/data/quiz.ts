@@ -75,6 +75,26 @@ export const QUESTIONS: Question[] = [
       { label: "A deep, immersive project", tags: ["long", "epic", "dense"] },
     ],
   },
+  {
+    id: "mood",
+    prompt: "What emotional register do you want?",
+    options: [
+      { label: "Bleak and unflinching", tags: ["dark", "tragedy"] },
+      { label: "Quiet and introspective", tags: ["quiet", "women"] },
+      { label: "Sharp and comic", tags: ["satire", "brisk"] },
+      { label: "Warm and redemptive", tags: ["hopeful", "romance"] },
+    ],
+  },
+  {
+    id: "form",
+    prompt: "Which form would you rather read?",
+    options: [
+      { label: "A sweeping novel", tags: ["epic", "long"] },
+      { label: "Drama or poetry", tags: ["tragedy", "ancient", "brisk"] },
+      { label: "Stories or short fiction", tags: ["short", "quiet"] },
+      { label: "Mystery or adventure", tags: ["mystery", "adventure"] },
+    ],
+  },
 ];
 
 
@@ -92,8 +112,10 @@ export function recommend(answers: Record<string, number>): Book[] {
     .map((b, idx) => {
       let score = 0;
       for (const t of b.tags) score += weight.get(t) ?? 0;
-      return { b, score: score + (BOOKS.length - idx) * 0.01 };
+      score /= Math.sqrt(b.tags.length || 1);
+      return { b, score: score + (BOOKS.length - idx) * 0.001 };
     })
+
     .sort((x, y) => y.score - x.score)
     .slice(0, 10)
     .map((x) => x.b);
