@@ -5,66 +5,67 @@ export type Question = { id: string; prompt: string; options: Option[] };
 
 export const QUESTIONS: Question[] = [
   {
-    id: "mood",
-    prompt: "What should the book do to you?",
+    id: "lens",
+    prompt: "Which academic lens interests you most?",
     options: [
-      { label: "Break my heart", tags: ["tragedy", "dark", "romance"] },
-      { label: "Sweep me somewhere else", tags: ["adventure", "epic"] },
-      { label: "Make me think for weeks", tags: ["philosophy", "dense"] },
-      { label: "Keep me warm", tags: ["hopeful", "quiet", "coming-of-age"] },
+      { label: "Philosophy & ethics", tags: ["philosophy", "dense"] },
+      { label: "Society & politics", tags: ["satire", "dystopia", "war"] },
+      { label: "Psychology & character", tags: ["dark", "russian", "coming-of-age"] },
+      { label: "History & culture", tags: ["war", "epic", "19c"] },
     ],
   },
   {
-    id: "era",
-    prompt: "Which century do you want to wander into?",
+    id: "period",
+    prompt: "Which literary period draws you in?",
     options: [
-      { label: "Antiquity & the Golden Age", tags: ["ancient"] },
-      { label: "The 1800s", tags: ["19c"] },
-      { label: "The early 1900s", tags: ["20c"] },
-      { label: "Surprise me", tags: [] },
+      { label: "Ancient & classical", tags: ["ancient", "epic"] },
+      { label: "Early modern", tags: ["british", "gothic"] },
+      { label: "19th century", tags: ["19c"] },
+      { label: "Early 20th century", tags: ["20c"] },
     ],
   },
   {
-    id: "length",
-    prompt: "How long is your patience?",
+    id: "demand",
+    prompt: "How demanding should the reading be?",
     options: [
-      { label: "Under 300 pages", tags: ["short", "brisk"] },
-      { label: "A comfortable few hundred", tags: ["medium"] },
-      { label: "Give me a doorstop", tags: ["long", "epic"] },
-      { label: "Length is irrelevant", tags: [] },
+      { label: "Clear and approachable", tags: ["brisk", "hopeful"] },
+      { label: "Thoughtful, with some complexity", tags: ["medium", "quiet"] },
+      { label: "Dense and intellectually rigorous", tags: ["dense", "philosophy"] },
+      { label: "Formally challenging", tags: ["dense", "20c"] },
     ],
   },
   {
-    id: "place",
-    prompt: "Where would you like to be reading from?",
+    id: "style",
+    prompt: "Which writing style do you prefer?",
     options: [
-      { label: "A draughty English house", tags: ["british", "gothic"] },
-      { label: "A Russian winter", tags: ["russian"] },
-      { label: "A Paris garret", tags: ["french"] },
-      { label: "An American road", tags: ["american"] },
+      { label: "Direct and economical", tags: ["brisk", "short"] },
+      { label: "Lyrical and atmospheric", tags: ["gothic", "quiet", "french"] },
+      { label: "Witty and satirical", tags: ["satire", "british"] },
+      { label: "Expansive and epic", tags: ["epic", "long"] },
     ],
   },
   {
-    id: "engine",
-    prompt: "What keeps you turning pages?",
+    id: "question",
+    prompt: "Which central question feels most compelling?",
     options: [
-      { label: "A secret to uncover", tags: ["mystery"] },
-      { label: "A love that shouldn't work", tags: ["romance"] },
-      { label: "Society getting skewered", tags: ["satire"] },
-      { label: "History pressing down", tags: ["war", "dystopia"] },
+      { label: "What makes a life moral?", tags: ["philosophy", "tragedy"] },
+      { label: "How does power shape society?", tags: ["dystopia", "war", "satire"] },
+      { label: "How do we form an identity?", tags: ["coming-of-age", "women"] },
+      { label: "How do we create meaning?", tags: ["philosophy", "quiet", "hopeful"] },
     ],
   },
   {
-    id: "voice",
-    prompt: "Pick a narrator you'd trust.",
+    id: "commitment",
+    prompt: "What kind of reading commitment suits you?",
     options: [
-      { label: "A young person becoming someone", tags: ["coming-of-age"] },
-      { label: "A woman writing against her age", tags: ["women"] },
-      { label: "A restless soul chasing something", tags: ["adventure", "dark"] },
-      { label: "A quiet observer of ordinary days", tags: ["quiet", "hopeful"] },
+      { label: "A focused, shorter work", tags: ["short", "brisk"] },
+      { label: "A steady mid-length book", tags: ["medium"] },
+      { label: "A substantial long-form read", tags: ["long"] },
+      { label: "A deep, immersive project", tags: ["long", "epic", "dense"] },
     ],
   },
 ];
+
 
 export function recommend(answers: Record<string, number>): Book[] {
   const chosen: string[] = [];
