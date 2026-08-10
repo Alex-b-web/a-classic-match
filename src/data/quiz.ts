@@ -19,11 +19,22 @@ export const QUESTIONS: Question[] = [
     prompt: "Which literary period draws you in?",
     options: [
       { label: "Ancient & classical", tags: ["ancient", "epic"] },
-      { label: "Early modern", tags: ["british", "gothic"] },
+      { label: "Early modern", tags: ["early-modern", "gothic"] },
       { label: "19th century", tags: ["19c"] },
       { label: "Early 20th century", tags: ["20c"] },
     ],
   },
+  {
+    id: "tradition",
+    prompt: "Which literary tradition appeals to you?",
+    options: [
+      { label: "British & Irish", tags: ["british", "irish"] },
+      { label: "Russian & German", tags: ["russian", "german"] },
+      { label: "American", tags: ["american"] },
+      { label: "World literature", tags: ["japanese", "latin", "african", "french"] },
+    ],
+  },
+
   {
     id: "demand",
     prompt: "How demanding should the reading be?",
