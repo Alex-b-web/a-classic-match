@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "A Classic Match — Find Your Next Classic" },
       {
         name: "description",
-        content: "Answer six questions and get ten classic novels matched to your taste.",
+        content: "Answer eight questions and get ten classic novels matched to your taste.",
       },
       { name: "author", content: "A Classic Match" },
       { property: "og:type", content: "website" },

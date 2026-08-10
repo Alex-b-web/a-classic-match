@@ -19,11 +19,22 @@ export const QUESTIONS: Question[] = [
     prompt: "Which literary period draws you in?",
     options: [
       { label: "Ancient & classical", tags: ["ancient", "epic"] },
-      { label: "Early modern", tags: ["british", "gothic"] },
+      { label: "Early modern", tags: ["early-modern", "gothic"] },
       { label: "19th century", tags: ["19c"] },
       { label: "Early 20th century", tags: ["20c"] },
     ],
   },
+  {
+    id: "tradition",
+    prompt: "Which literary tradition appeals to you?",
+    options: [
+      { label: "British & Irish", tags: ["british", "irish"] },
+      { label: "Russian & German", tags: ["russian", "german"] },
+      { label: "American", tags: ["american"] },
+      { label: "World literature", tags: ["japanese", "latin", "african", "french"] },
+    ],
+  },
+
   {
     id: "demand",
     prompt: "How demanding should the reading be?",
@@ -64,6 +75,26 @@ export const QUESTIONS: Question[] = [
       { label: "A deep, immersive project", tags: ["long", "epic", "dense"] },
     ],
   },
+  {
+    id: "mood",
+    prompt: "What emotional register do you want?",
+    options: [
+      { label: "Bleak and unflinching", tags: ["dark", "tragedy"] },
+      { label: "Quiet and introspective", tags: ["quiet", "women"] },
+      { label: "Sharp and comic", tags: ["satire", "brisk"] },
+      { label: "Warm and redemptive", tags: ["hopeful", "romance"] },
+    ],
+  },
+  {
+    id: "form",
+    prompt: "Which form would you rather read?",
+    options: [
+      { label: "A sweeping novel", tags: ["epic", "long"] },
+      { label: "Drama or poetry", tags: ["tragedy", "ancient", "brisk"] },
+      { label: "Stories or short fiction", tags: ["short", "quiet"] },
+      { label: "Mystery or adventure", tags: ["mystery", "adventure"] },
+    ],
+  },
 ];
 
 
@@ -81,8 +112,10 @@ export function recommend(answers: Record<string, number>): Book[] {
     .map((b, idx) => {
       let score = 0;
       for (const t of b.tags) score += weight.get(t) ?? 0;
-      return { b, score: score + (BOOKS.length - idx) * 0.01 };
+      score /= Math.sqrt(b.tags.length || 1);
+      return { b, score: score + (BOOKS.length - idx) * 0.001 };
     })
+
     .sort((x, y) => y.score - x.score)
     .slice(0, 10)
     .map((x) => x.b);
