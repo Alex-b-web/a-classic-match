@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Library } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 import { QUESTIONS, recommend } from "@/data/quiz";
+import { QUOTES, randomQuote } from "@/data/quotes";
+
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 
@@ -32,7 +34,11 @@ function Index() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
+  // Pick a fresh quote after hydration so each page load shows a different one.
+  const [quote, setQuote] = useState(QUOTES[0]!);
+  useEffect(() => setQuote(randomQuote()), []);
   const results = useMemo(() => (stage === "results" ? recommend(answers) : []), [stage, answers]);
+
 
   const pick = (qid: string, i: number) => {
     setAnswers((a) => ({ ...a, [qid]: i }));
@@ -73,13 +79,16 @@ function Index() {
           <p className="font-serif text-xs uppercase tracking-[0.35em] text-accent">
             Before we begin
           </p>
-          <blockquote className="mt-6 font-serif text-[2rem] leading-[1.2] italic text-foreground">
-            “A classic is a book which with each rereading offers as much of a sense of discovery as
-            the first reading.”
+          <blockquote
+            key={quote.author + quote.text}
+            className="mt-6 animate-[var(--animate-rise)] font-serif text-[2rem] leading-[1.2] italic text-foreground"
+          >
+            “{quote.text}”
           </blockquote>
           <footer className="mt-5 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-            — Italo Calvino
+            — {quote.author}
           </footer>
+
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
             Six questions. Ten classics chosen for the reader you actually are.
@@ -144,15 +153,17 @@ function Index() {
             Save the ones you like — your list keeps a buy link for each.
           </p>
           <div className="mt-6">
-            {results.map((b, i) => (
+            {results.map((r, i) => (
               <BookCard
-                key={b.id}
-                book={b}
+                key={r.book.id}
+                book={r.book}
                 rank={i + 1}
-                saved={has(b.id)}
-                onToggle={() => toggle(b.id)}
+                match={r.match}
+                saved={has(r.book.id)}
+                onToggle={() => toggle(r.book.id)}
               />
             ))}
+
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link

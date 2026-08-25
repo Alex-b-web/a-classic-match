@@ -98,7 +98,9 @@ export const QUESTIONS: Question[] = [
 ];
 
 
-export function recommend(answers: Record<string, number>): Book[] {
+export type Match = { book: Book; match: number };
+
+export function recommend(answers: Record<string, number>): Match[] {
   const chosen: string[] = [];
   for (const q of QUESTIONS) {
     const i = answers[q.id];
@@ -108,15 +110,22 @@ export function recommend(answers: Record<string, number>): Book[] {
   const weight = new Map<string, number>();
   chosen.forEach((t, i) => weight.set(t, (weight.get(t) ?? 0) + (i < 3 ? 3 : 2)));
 
-  return [...BOOKS]
+  const scored = [...BOOKS]
     .map((b, idx) => {
       let score = 0;
       for (const t of b.tags) score += weight.get(t) ?? 0;
       score /= Math.sqrt(b.tags.length || 1);
-      return { b, score: score + (BOOKS.length - idx) * 0.001 };
+      return { b, score, tie: score + (BOOKS.length - idx) * 0.001 };
     })
+    .sort((x, y) => y.tie - x.tie)
+    .slice(0, 10);
 
-    .sort((x, y) => y.score - x.score)
-    .slice(0, 10)
-    .map((x) => x.b);
+  const top = scored[0]?.score ?? 0;
+  return scored.map((x) => ({
+    book: x.b,
+    // Relative fit: the strongest match sits near the top of the scale,
+    // the rest scale down proportionally but stay readable.
+    match: top > 0 ? Math.round(58 + (x.score / top) * 40) : 60,
+  }));
 }
+
