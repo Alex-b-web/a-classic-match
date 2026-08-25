@@ -144,15 +144,17 @@ function Index() {
             Save the ones you like — your list keeps a buy link for each.
           </p>
           <div className="mt-6">
-            {results.map((b, i) => (
+            {results.map((r, i) => (
               <BookCard
-                key={b.id}
-                book={b}
+                key={r.book.id}
+                book={r.book}
                 rank={i + 1}
-                saved={has(b.id)}
-                onToggle={() => toggle(b.id)}
+                match={r.match}
+                saved={has(r.book.id)}
+                onToggle={() => toggle(r.book.id)}
               />
             ))}
+
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
