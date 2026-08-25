@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Library } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 import { QUESTIONS, recommend } from "@/data/quiz";
+import { QUOTES, randomQuote } from "@/data/quotes";
+
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 
