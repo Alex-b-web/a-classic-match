@@ -15,12 +15,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Six questions, ten classic novels chosen for you — with covers, page counts, authors and the year each was written.",
+          "Nine questions, ten classic novels chosen for you — with covers, page counts, authors and the year each was written.",
       },
       { property: "og:title", content: "A Classic Match — Find Your Next Classic" },
       {
         property: "og:description",
-        content: "Six questions, ten classic novels chosen for you.",
+        content: "Nine questions, ten classic novels chosen for you.",
       },
     ],
   }),
@@ -91,7 +91,7 @@ function Index() {
 
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
-            Six questions. Ten classics chosen for the reader you actually are.
+            Nine questions. Ten classics chosen for the reader you actually are.
           </p>
           <button
             onClick={() => setStage("quiz")}
