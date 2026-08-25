@@ -98,11 +98,25 @@ export const QUESTIONS: Question[] = [
 ];
 
 
+/** Free tier: the first six questions and a smaller slice of the library. */
+export const FREE_QUESTION_COUNT = 6;
+export const FREE_LIBRARY_SIZE = 40;
+
+export function questionsFor(isPro: boolean): Question[] {
+  return isPro ? QUESTIONS : QUESTIONS.slice(0, FREE_QUESTION_COUNT);
+}
+
+export function libraryFor(isPro: boolean): Book[] {
+  return isPro ? BOOKS : BOOKS.slice(0, FREE_LIBRARY_SIZE);
+}
+
 export type Match = { book: Book; match: number };
 
-export function recommend(answers: Record<string, number>): Match[] {
+export function recommend(answers: Record<string, number>, isPro = true): Match[] {
+  const questions = questionsFor(isPro);
+  const pool = libraryFor(isPro);
   const chosen: string[] = [];
-  for (const q of QUESTIONS) {
+  for (const q of questions) {
     const i = answers[q.id];
     const opt = i === undefined ? undefined : q.options[i];
     if (opt) chosen.push(...opt.tags);
@@ -110,12 +124,12 @@ export function recommend(answers: Record<string, number>): Match[] {
   const weight = new Map<string, number>();
   chosen.forEach((t, i) => weight.set(t, (weight.get(t) ?? 0) + (i < 3 ? 3 : 2)));
 
-  const scored = [...BOOKS]
+  const scored = [...pool]
     .map((b, idx) => {
       let score = 0;
       for (const t of b.tags) score += weight.get(t) ?? 0;
       score /= Math.sqrt(b.tags.length || 1);
-      return { b, score, tie: score + (BOOKS.length - idx) * 0.001 };
+      return { b, score, tie: score + (pool.length - idx) * 0.001 };
     })
     .sort((x, y) => y.tie - x.tie)
     .slice(0, 10);
@@ -128,4 +142,5 @@ export function recommend(answers: Record<string, number>): Match[] {
     match: top > 0 ? Math.round(58 + (x.score / top) * 40) : 60,
   }));
 }
+
 
