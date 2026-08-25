@@ -73,13 +73,16 @@ function Index() {
           <p className="font-serif text-xs uppercase tracking-[0.35em] text-accent">
             Before we begin
           </p>
-          <blockquote className="mt-6 font-serif text-[2rem] leading-[1.2] italic text-foreground">
-            “A classic is a book which with each rereading offers as much of a sense of discovery as
-            the first reading.”
+          <blockquote
+            key={quote.author + quote.text}
+            className="mt-6 animate-[var(--animate-rise)] font-serif text-[2rem] leading-[1.2] italic text-foreground"
+          >
+            “{quote.text}”
           </blockquote>
           <footer className="mt-5 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-            — Italo Calvino
+            — {quote.author}
           </footer>
+
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
             Six questions. Ten classics chosen for the reader you actually are.
