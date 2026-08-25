@@ -32,7 +32,11 @@ function Index() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
+  // Pick a fresh quote after hydration so each page load shows a different one.
+  const [quote, setQuote] = useState(QUOTES[0]!);
+  useEffect(() => setQuote(randomQuote()), []);
   const results = useMemo(() => (stage === "results" ? recommend(answers) : []), [stage, answers]);
+
 
   const pick = (qid: string, i: number) => {
     setAnswers((a) => ({ ...a, [qid]: i }));
