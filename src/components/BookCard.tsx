@@ -34,11 +34,13 @@ export function Cover({ book, className = "" }: { book: Book; className?: string
 export function BookCard({
   book,
   rank,
+  match,
   saved,
   onToggle,
 }: {
   book: Book;
   rank?: number;
+  match?: number;
   saved: boolean;
   onToggle: () => void;
 }) {
@@ -46,16 +48,24 @@ export function BookCard({
     <article className="flex gap-4 border-b border-border/60 py-5">
       <Cover book={book} className="h-36 w-24 shrink-0" />
       <div className="min-w-0 flex-1">
-        {rank !== undefined && (
-          <span className="font-serif text-xs tracking-[0.25em] text-accent">
-            {String(rank).padStart(2, "0")}
-          </span>
-        )}
+        <div className="flex items-baseline justify-between gap-3">
+          {rank !== undefined && (
+            <span className="font-serif text-xs tracking-[0.25em] text-accent">
+              {String(rank).padStart(2, "0")}
+            </span>
+          )}
+          {match !== undefined && (
+            <span className="shrink-0 rounded-full border border-gilt/60 px-2.5 py-0.5 font-serif text-xs tracking-widest text-accent">
+              {match}% match
+            </span>
+          )}
+        </div>
         <h3 className="font-serif text-xl leading-tight text-foreground">{book.title}</h3>
         <p className="mt-0.5 text-sm text-muted-foreground">{book.author}</p>
         <p className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">
           {book.year < 0 ? `c. ${Math.abs(book.year)} BC` : book.year} · {book.pages} pages
         </p>
+
         <p className="mt-2 font-serif text-sm italic leading-snug text-foreground/80">
           {book.blurb}
         </p>
