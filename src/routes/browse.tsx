@@ -86,6 +86,17 @@ function BrowsePage() {
         Every classic we match on — search by title, author, year or theme.
       </p>
 
+      {!isPro && (
+        <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
+          You’re browsing the free shelf of {library.length} classics.{" "}
+          <Link to="/pro" className="text-accent underline decoration-gilt/60">
+            Unlock all {BOOKS.length} for {PRO_PRICE}
+          </Link>
+          .
+        </p>
+      )}
+
+
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <label className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-secondary/60 px-4 py-2.5">
           <Search className="size-4 shrink-0 text-muted-foreground" />
