@@ -105,8 +105,19 @@ function Index() {
 
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
-            Nine questions. Ten classics chosen for the reader you actually are.
+            {QUESTIONS.length === 1 ? "One question" : `${QUESTIONS.length} questions`}. Ten
+            classics chosen for the reader you actually are.
           </p>
+          {!isPro && (
+            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+              Free gives you {QUESTIONS.length} questions and a shorter shelf.{" "}
+              <Link to="/pro" className="text-accent underline decoration-gilt/60">
+                Pro is {PRO_PRICE}
+              </Link>
+              .
+            </p>
+          )}
+
           <button
             onClick={() => setStage("quiz")}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90"
