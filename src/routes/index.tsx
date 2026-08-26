@@ -73,12 +73,19 @@ function Index() {
             Browse
           </Link>
           <Link
+            to="/pro"
+            className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-accent hover:opacity-80"
+          >
+            <Sparkles className="size-4" /> {isPro ? "Pro" : `Pro ${PRO_PRICE}`}
+          </Link>
+          <Link
             to="/list"
             className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
           >
             <Library className="size-4" /> List
           </Link>
         </nav>
+
       </header>
 
       {stage === "quote" && (
