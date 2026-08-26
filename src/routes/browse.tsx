@@ -3,8 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 import { BOOKS } from "@/data/books";
+import { libraryFor } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
+import { PRO_PRICE, useTier } from "@/hooks/use-tier";
+
 
 export const Route = createFileRoute("/browse")({
   head: () => ({
@@ -31,23 +34,27 @@ type SortKey = "title" | "author" | "year" | "pages";
 
 function BrowsePage() {
   const { toggle, has } = useShelf();
+  const { isPro } = useTier();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("title");
+
+  const library = useMemo(() => libraryFor(isPro), [isPro]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
-      ? BOOKS.filter((b) =>
+      ? library.filter((b) =>
           [b.title, b.author, String(b.year), ...b.tags].join(" ").toLowerCase().includes(q),
         )
-      : BOOKS;
+      : library;
     return [...filtered].sort((a, b) => {
       if (sort === "year") return a.year - b.year;
       if (sort === "pages") return a.pages - b.pages;
       if (sort === "author") return a.author.localeCompare(b.author);
       return a.title.localeCompare(b.title);
     });
-  }, [query, sort]);
+  }, [query, sort, library]);
+
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
@@ -78,6 +85,17 @@ function BrowsePage() {
       <p className="mt-2 text-sm text-muted-foreground">
         Every classic we match on — search by title, author, year or theme.
       </p>
+
+      {!isPro && (
+        <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
+          You’re browsing the free shelf of {library.length} classics.{" "}
+          <Link to="/pro" className="text-accent underline decoration-gilt/60">
+            Unlock all {BOOKS.length} for {PRO_PRICE}
+          </Link>
+          .
+        </p>
+      )}
+
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <label className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-secondary/60 px-4 py-2.5">

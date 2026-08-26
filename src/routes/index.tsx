@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Library } from "lucide-react";
+import { ArrowRight, Library, Sparkles } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
-import { QUESTIONS, recommend } from "@/data/quiz";
+import { questionsFor, recommend } from "@/data/quiz";
 import { QUOTES, randomQuote } from "@/data/quotes";
 
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
+import { PRO_PRICE, useTier } from "@/hooks/use-tier";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,17 +36,22 @@ function Index() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
+  const { isPro } = useTier();
+  const QUESTIONS = useMemo(() => questionsFor(isPro), [isPro]);
   // Pick a fresh quote after hydration so each page load shows a different one.
   const [quote, setQuote] = useState(QUOTES[0]!);
   useEffect(() => setQuote(randomQuote()), []);
-  const results = useMemo(() => (stage === "results" ? recommend(answers) : []), [stage, answers]);
-
+  const results = useMemo(
+    () => (stage === "results" ? recommend(answers, isPro) : []),
+    [stage, answers, isPro],
+  );
 
   const pick = (qid: string, i: number) => {
     setAnswers((a) => ({ ...a, [qid]: i }));
     if (step + 1 < QUESTIONS.length) setStep(step + 1);
     else setStage("results");
   };
+
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
@@ -66,12 +73,19 @@ function Index() {
             Browse
           </Link>
           <Link
+            to="/pro"
+            className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-accent hover:opacity-80"
+          >
+            <Sparkles className="size-4" /> {isPro ? "Pro" : `Pro ${PRO_PRICE}`}
+          </Link>
+          <Link
             to="/list"
             className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
           >
             <Library className="size-4" /> List
           </Link>
         </nav>
+
       </header>
 
       {stage === "quote" && (
@@ -91,8 +105,19 @@ function Index() {
 
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
-            Nine questions. Ten classics chosen for the reader you actually are.
+            {QUESTIONS.length === 1 ? "One question" : `${QUESTIONS.length} questions`}. Ten
+            classics chosen for the reader you actually are.
           </p>
+          {!isPro && (
+            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+              Free gives you {QUESTIONS.length} questions and a shorter shelf.{" "}
+              <Link to="/pro" className="text-accent underline decoration-gilt/60">
+                Pro is {PRO_PRICE}
+              </Link>
+              .
+            </p>
+          )}
+
           <button
             onClick={() => setStage("quiz")}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90"
@@ -152,19 +177,28 @@ function Index() {
           <p className="mt-2 text-sm text-muted-foreground">
             Save the ones you like — your list keeps a buy link for each.
           </p>
+          {!isPro && (
+            <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
+              Pro adds three more questions, the full library and a % match score on each book.{" "}
+              <Link to="/pro" className="text-accent underline decoration-gilt/60">
+                Upgrade for {PRO_PRICE}
+              </Link>
+              .
+            </p>
+          )}
           <div className="mt-6">
             {results.map((r, i) => (
               <BookCard
                 key={r.book.id}
                 book={r.book}
                 rank={i + 1}
-                match={r.match}
+                {...(isPro ? { match: r.match } : {})}
                 saved={has(r.book.id)}
                 onToggle={() => toggle(r.book.id)}
               />
             ))}
-
           </div>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/list"
