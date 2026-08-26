@@ -3,8 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 import { BOOKS } from "@/data/books";
+import { libraryFor } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
+import { PRO_PRICE, useTier } from "@/hooks/use-tier";
+
 
 export const Route = createFileRoute("/browse")({
   head: () => ({
