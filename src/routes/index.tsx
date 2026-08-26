@@ -177,19 +177,28 @@ function Index() {
           <p className="mt-2 text-sm text-muted-foreground">
             Save the ones you like — your list keeps a buy link for each.
           </p>
+          {!isPro && (
+            <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
+              Pro adds three more questions, the full library and a % match score on each book.{" "}
+              <Link to="/pro" className="text-accent underline decoration-gilt/60">
+                Upgrade for {PRO_PRICE}
+              </Link>
+              .
+            </p>
+          )}
           <div className="mt-6">
             {results.map((r, i) => (
               <BookCard
                 key={r.book.id}
                 book={r.book}
                 rank={i + 1}
-                match={r.match}
+                {...(isPro ? { match: r.match } : {})}
                 saved={has(r.book.id)}
                 onToggle={() => toggle(r.book.id)}
               />
             ))}
-
           </div>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/list"
