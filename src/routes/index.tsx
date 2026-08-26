@@ -36,17 +36,22 @@ function Index() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
+  const { isPro } = useTier();
+  const QUESTIONS = useMemo(() => questionsFor(isPro), [isPro]);
   // Pick a fresh quote after hydration so each page load shows a different one.
   const [quote, setQuote] = useState(QUOTES[0]!);
   useEffect(() => setQuote(randomQuote()), []);
-  const results = useMemo(() => (stage === "results" ? recommend(answers) : []), [stage, answers]);
-
+  const results = useMemo(
+    () => (stage === "results" ? recommend(answers, isPro) : []),
+    [stage, answers, isPro],
+  );
 
   const pick = (qid: string, i: number) => {
     setAnswers((a) => ({ ...a, [qid]: i }));
     if (step + 1 < QUESTIONS.length) setStep(step + 1);
     else setStage("results");
   };
+
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
