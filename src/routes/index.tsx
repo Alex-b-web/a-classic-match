@@ -105,18 +105,19 @@ function Index() {
 
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
-            {QUESTIONS.length === 1 ? "One question" : `${QUESTIONS.length} questions`}. Ten
-            classics chosen for the reader you actually are.
+            {QUESTIONS.length === 1 ? "One question" : `${QUESTIONS.length} quick questions`}. Ten
+            classic books picked just for you.
           </p>
           {!isPro && (
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-              Free gives you {QUESTIONS.length} questions and a shorter shelf.{" "}
+              Free gets you {QUESTIONS.length} questions and a smaller list of books.{" "}
               <Link to="/pro" className="text-accent underline decoration-gilt/60">
-                Pro is {PRO_PRICE}
+                Pro costs {PRO_PRICE}
               </Link>
               .
             </p>
           )}
+
 
           <button
             onClick={() => setStage("quiz")}
@@ -172,20 +173,22 @@ function Index() {
         <section className="pt-12">
           <p className="font-serif text-xs uppercase tracking-[0.3em] text-accent">Your shelf</p>
           <h1 className="mt-2 font-serif text-3xl leading-tight text-foreground">
-            Ten classics for you
+            Ten classic books for you
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Save the ones you like — your list keeps a buy link for each.
+            Tap the heart to save a book — your list keeps a link to buy it.
           </p>
           {!isPro && (
             <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
-              Pro adds three more questions, the full library and a % match score on each book.{" "}
+              Pro adds three more questions, every book we have, and a score showing how well each
+              book fits you.{" "}
               <Link to="/pro" className="text-accent underline decoration-gilt/60">
                 Upgrade for {PRO_PRICE}
               </Link>
               .
             </p>
           )}
+
           <div className="mt-6">
             {results.map((r, i) => (
               <BookCard
