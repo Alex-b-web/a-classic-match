@@ -100,7 +100,7 @@ export const QUESTIONS: Question[] = [
 
 /** Free tier: the first six questions and a smaller slice of the library. */
 export const FREE_QUESTION_COUNT = 6;
-export const FREE_LIBRARY_SIZE = 40;
+export const FREE_LIBRARY_SIZE = 70;
 
 export function questionsFor(isPro: boolean): Question[] {
   return isPro ? QUESTIONS : QUESTIONS.slice(0, FREE_QUESTION_COUNT);
