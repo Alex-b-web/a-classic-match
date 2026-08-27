@@ -58,10 +58,10 @@ function ProPage() {
         A Classic Match Pro
       </p>
       <h1 className="mt-3 font-serif text-4xl leading-tight text-foreground">
-        The whole canon, {PRO_PRICE} once.
+        Every book, {PRO_PRICE} once.
       </h1>
       <p className="mt-3 max-w-md font-serif text-lg leading-snug text-foreground/80">
-        The free quiz gives you a taste. Pro reads you properly.
+        The free quiz gives you a taste. Pro gets to know you properly.
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -71,10 +71,10 @@ function ProPage() {
           </p>
           <p className="mt-2 font-serif text-3xl text-foreground">£0</p>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li>{FREE_QUESTION_COUNT} matching questions</li>
-            <li>{FREE_LIBRARY_SIZE} classics in the library</li>
-            <li>Ten recommendations, no match scores</li>
-            <li>Reading list and buy links</li>
+            <li>{FREE_QUESTION_COUNT} questions</li>
+            <li>{FREE_LIBRARY_SIZE} books to pick from</li>
+            <li>Ten book picks, no fit scores</li>
+            <li>Save books and buy links</li>
           </ul>
         </div>
         <div className="rounded-md border border-gilt/70 bg-secondary/50 p-5">
@@ -87,10 +87,10 @@ function ProPage() {
           </p>
           <ul className="mt-4 space-y-2 text-sm text-foreground/85">
             {[
-              `All ${QUESTIONS.length} matching questions`,
-              `The full library — ${BOOKS.length} classics`,
-              "% match score on every recommendation",
-              "Search and sort the entire library",
+              `All ${QUESTIONS.length} questions`,
+              `Every book — ${BOOKS.length} classics`,
+              "A score showing how well each book fits you",
+              "Search and sort all the books",
             ].map((f) => (
               <li key={f} className="flex gap-2">
                 <Check className="mt-0.5 size-4 shrink-0 text-accent" /> {f}
@@ -99,6 +99,7 @@ function ProPage() {
           </ul>
         </div>
       </div>
+
 
       {isPro ? (
         <div className="mt-10">
