@@ -105,8 +105,9 @@ function Index() {
 
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
-            {QUESTIONS.length === 1 ? "One question" : `${QUESTIONS.length} quick questions`}. Ten
-            classic books picked just for you.
+            {isPro
+              ? `${QUESTIONS.length} questions on taste, era and temperament. Ten classics chosen to fit.`
+              : `${QUESTIONS.length} quick questions. Ten classic books picked just for you.`}
           </p>
 
 
