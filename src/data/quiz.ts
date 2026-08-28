@@ -99,13 +99,80 @@ export const QUESTIONS: Question[] = [
 
 
 
-/** Free tier: the first six questions and a smaller slice of the library. */
-export const FREE_QUESTION_COUNT = 6;
+/**
+ * The free quiz is its own six broad questions; the pro quiz (above) asks nine
+ * finer-grained ones. They are separate sets, not one sliced from the other.
+ */
+export const FREE_QUESTIONS: Question[] = [
+  {
+    id: "lens",
+    prompt: "What pulls you into a book?",
+    options: [
+      { label: "Big ideas about life", tags: ["philosophy", "dense"] },
+      { label: "People, power and politics", tags: ["satire", "dystopia", "war"] },
+      { label: "Characters and their inner lives", tags: ["dark", "russian", "coming-of-age"] },
+      { label: "History and other worlds", tags: ["war", "epic", "19c"] },
+    ],
+  },
+  {
+    id: "period",
+    prompt: "How far back would you like to go?",
+    options: [
+      { label: "As far back as it gets", tags: ["ancient", "epic"] },
+      { label: "A few centuries", tags: ["early-modern", "gothic"] },
+      { label: "The 1800s", tags: ["19c"] },
+      { label: "Closer to modern times", tags: ["20c"] },
+    ],
+  },
+  {
+    id: "mood",
+    prompt: "What mood are you after?",
+    options: [
+      { label: "Dark and sad", tags: ["dark", "tragedy"] },
+      { label: "Calm and thoughtful", tags: ["quiet", "women"] },
+      { label: "Funny and sharp", tags: ["satire", "brisk"] },
+      { label: "Warm and hopeful", tags: ["hopeful", "romance"] },
+    ],
+  },
+  {
+    id: "demand",
+    prompt: "Easy read or hard work?",
+    options: [
+      { label: "Easy to read", tags: ["brisk", "hopeful"] },
+      { label: "A bit of a challenge", tags: ["medium", "quiet"] },
+      { label: "Properly difficult", tags: ["dense", "philosophy"] },
+      { label: "Strange and experimental", tags: ["dense", "20c"] },
+    ],
+  },
+  {
+    id: "commitment",
+    prompt: "How long a book do you want?",
+    options: [
+      { label: "Short — a quick read", tags: ["short", "brisk"] },
+      { label: "Medium — a normal novel", tags: ["medium"] },
+      { label: "Long — a proper doorstop", tags: ["long"] },
+      { label: "Huge — something to live in", tags: ["long", "epic", "dense"] },
+    ],
+  },
+  {
+    id: "form",
+    prompt: "What kind of book do you fancy?",
+    options: [
+      { label: "A big novel", tags: ["epic", "long"] },
+      { label: "A play or poetry", tags: ["tragedy", "ancient", "brisk"] },
+      { label: "Short stories", tags: ["short", "quiet"] },
+      { label: "A mystery or adventure", tags: ["mystery", "adventure"] },
+    ],
+  },
+];
+
+export const FREE_QUESTION_COUNT = FREE_QUESTIONS.length;
 export const FREE_LIBRARY_SIZE = 70;
 
 export function questionsFor(isPro: boolean): Question[] {
-  return isPro ? QUESTIONS : QUESTIONS.slice(0, FREE_QUESTION_COUNT);
+  return isPro ? QUESTIONS : FREE_QUESTIONS;
 }
+
 
 export function libraryFor(isPro: boolean): Book[] {
   return isPro ? BOOKS : BOOKS.slice(0, FREE_LIBRARY_SIZE);
