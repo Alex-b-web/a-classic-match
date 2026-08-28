@@ -87,12 +87,8 @@ function BrowsePage() {
       </p>
 
       {!isPro && (
-        <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
-          You’re browsing the free shelf of {library.length} classics.{" "}
-          <Link to="/pro" className="text-accent underline decoration-gilt/60">
-            Unlock all {BOOKS.length} for {PRO_PRICE}
-          </Link>
-          .
+        <p className="mt-4 text-sm text-muted-foreground">
+          You’re browsing the free shelf of {library.length} classics.
         </p>
       )}
 

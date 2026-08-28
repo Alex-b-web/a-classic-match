@@ -76,7 +76,7 @@ function Index() {
             to="/pro"
             className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-accent hover:opacity-80"
           >
-            <Sparkles className="size-4" /> {isPro ? "Pro" : `Pro ${PRO_PRICE}`}
+            <Sparkles className="size-4" /> Pro
           </Link>
           <Link
             to="/list"
