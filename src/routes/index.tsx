@@ -7,7 +7,7 @@ import { QUOTES, randomQuote } from "@/data/quotes";
 
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
-import { PRO_PRICE, useTier } from "@/hooks/use-tier";
+import { useTier } from "@/hooks/use-tier";
 
 
 export const Route = createFileRoute("/")({
@@ -76,7 +76,7 @@ function Index() {
             to="/pro"
             className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-accent hover:opacity-80"
           >
-            <Sparkles className="size-4" /> {isPro ? "Pro" : `Pro ${PRO_PRICE}`}
+            <Sparkles className="size-4" /> Pro
           </Link>
           <Link
             to="/list"
@@ -108,15 +108,6 @@ function Index() {
             {QUESTIONS.length === 1 ? "One question" : `${QUESTIONS.length} quick questions`}. Ten
             classic books picked just for you.
           </p>
-          {!isPro && (
-            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-              Free gets you {QUESTIONS.length} questions and a smaller list of books.{" "}
-              <Link to="/pro" className="text-accent underline decoration-gilt/60">
-                Pro costs {PRO_PRICE}
-              </Link>
-              .
-            </p>
-          )}
 
 
           <button
@@ -178,16 +169,6 @@ function Index() {
           <p className="mt-2 text-sm text-muted-foreground">
             Tap the heart to save a book — your list keeps a link to buy it.
           </p>
-          {!isPro && (
-            <p className="mt-4 rounded-md border border-gilt/50 bg-secondary/40 px-4 py-3 text-sm text-foreground/80">
-              Pro adds three more questions, every book we have, and a score showing how well each
-              book fits you.{" "}
-              <Link to="/pro" className="text-accent underline decoration-gilt/60">
-                Upgrade for {PRO_PRICE}
-              </Link>
-              .
-            </p>
-          )}
 
           <div className="mt-6">
             {results.map((r, i) => (
