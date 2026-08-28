@@ -7,7 +7,7 @@ import { QUOTES, randomQuote } from "@/data/quotes";
 
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
-import { PRO_PRICE, useTier } from "@/hooks/use-tier";
+import { useTier } from "@/hooks/use-tier";
 
 
 export const Route = createFileRoute("/")({

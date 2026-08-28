@@ -6,7 +6,7 @@ import { BOOKS } from "@/data/books";
 import { libraryFor } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
-import { PRO_PRICE, useTier } from "@/hooks/use-tier";
+import { useTier } from "@/hooks/use-tier";
 
 
 export const Route = createFileRoute("/browse")({
