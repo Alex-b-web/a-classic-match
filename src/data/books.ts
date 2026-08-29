@@ -2273,7 +2273,7 @@ export const BOOKS: Book[] = [
 ];
 
 export const amazonUrl = (b: Book) =>
-  `https://www.amazon.com/s?k=${encodeURIComponent(`${b.title} ${b.author}`)}&i=stripbooks`;
+  `https://www.amazon.co.uk/s?k=${encodeURIComponent(`${b.title} ${b.author}`)}&i=stripbooks`;
 
 export const coverUrl = (b: Book) =>
   `https://covers.openlibrary.org/b/isbn/${b.isbn}-L.jpg`;
