@@ -1,13 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Library, Sparkles } from "lucide-react";
+import { ArrowRight, Library } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
-import { questionsFor, recommend } from "@/data/quiz";
+import { QUESTIONS, recommend } from "@/data/quiz";
 import { QUOTES, randomQuote } from "@/data/quotes";
 
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
-import { useTier } from "@/hooks/use-tier";
 
 
 export const Route = createFileRoute("/")({
@@ -36,14 +35,12 @@ function Index() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
-  const { isPro } = useTier();
-  const QUESTIONS = useMemo(() => questionsFor(isPro), [isPro]);
   // Pick a fresh quote after hydration so each page load shows a different one.
   const [quote, setQuote] = useState(QUOTES[0]!);
   useEffect(() => setQuote(randomQuote()), []);
   const results = useMemo(
-    () => (stage === "results" ? recommend(answers, isPro) : []),
-    [stage, answers, isPro],
+    () => (stage === "results" ? recommend(answers) : []),
+    [stage, answers],
   );
 
   const pick = (qid: string, i: number) => {
@@ -73,12 +70,6 @@ function Index() {
             Browse
           </Link>
           <Link
-            to="/pro"
-            className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-accent hover:opacity-80"
-          >
-            <Sparkles className="size-4" /> Pro
-          </Link>
-          <Link
             to="/list"
             className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
           >
@@ -105,9 +96,7 @@ function Index() {
 
           <div className="mt-14 h-px w-24 bg-gilt" />
           <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
-            {isPro
-              ? `${QUESTIONS.length} questions on taste, era and temperament. Ten classics chosen to fit.`
-              : `${QUESTIONS.length} quick questions. Ten classic books picked just for you.`}
+            {`${QUESTIONS.length} questions on taste, era and temperament. Ten classics chosen to fit.`}
           </p>
 
 
@@ -177,7 +166,7 @@ function Index() {
                 key={r.book.id}
                 book={r.book}
                 rank={i + 1}
-                {...(isPro ? { match: r.match } : {})}
+                match={r.match}
                 saved={has(r.book.id)}
                 onToggle={() => toggle(r.book.id)}
               />

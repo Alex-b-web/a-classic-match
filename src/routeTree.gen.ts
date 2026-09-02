@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as ListRouteImport } from './routes/list'
-import { Route as ProRouteImport } from './routes/pro'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,44 +28,35 @@ const ListRoute = ListRouteImport.update({
   path: '/list',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProRoute = ProRouteImport.update({
-  id: '/pro',
-  path: '/pro',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/list': typeof ListRoute
-  '/pro': typeof ProRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/list': typeof ListRoute
-  '/pro': typeof ProRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/list': typeof ListRoute
-  '/pro': typeof ProRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse' | '/list' | '/pro'
+  fullPaths: '/' | '/browse' | '/list'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/list' | '/pro'
-  id: '__root__' | '/' | '/browse' | '/list' | '/pro'
+  to: '/' | '/browse' | '/list'
+  id: '__root__' | '/' | '/browse' | '/list'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
   ListRoute: typeof ListRoute
-  ProRoute: typeof ProRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,13 +82,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pro': {
-      id: '/pro'
-      path: '/pro'
-      fullPath: '/pro'
-      preLoaderRoute: typeof ProRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -106,7 +89,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
   ListRoute: ListRoute,
-  ProRoute: ProRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -98,91 +98,17 @@ export const QUESTIONS: Question[] = [
 ];
 
 
+export const QUESTION_COUNT = QUESTIONS.length;
 
-/**
- * The free quiz is its own six broad questions; the pro quiz (above) asks nine
- * finer-grained ones. They are separate sets, not one sliced from the other.
- */
-export const FREE_QUESTIONS: Question[] = [
-  {
-    id: "lens",
-    prompt: "What pulls you into a book?",
-    options: [
-      { label: "Big ideas about how to live", tags: ["philosophy", "dense"] },
-      { label: "Society, power and politics", tags: ["satire", "dystopia", "war"] },
-      { label: "Characters and their inner lives", tags: ["dark", "russian", "coming-of-age"] },
-      { label: "History and unfamiliar worlds", tags: ["war", "epic", "19c"] },
-    ],
-  },
-  {
-    id: "period",
-    prompt: "How far back would you like to go?",
-    options: [
-      { label: "The ancient world", tags: ["ancient", "epic"] },
-      { label: "A few centuries back", tags: ["early-modern", "gothic"] },
-      { label: "The nineteenth century", tags: ["19c"] },
-      { label: "Closer to modern times", tags: ["20c"] },
-    ],
-  },
-  {
-    id: "mood",
-    prompt: "What mood are you after?",
-    options: [
-      { label: "Dark and tragic", tags: ["dark", "tragedy"] },
-      { label: "Calm and reflective", tags: ["quiet", "women"] },
-      { label: "Funny and biting", tags: ["satire", "brisk"] },
-      { label: "Warm and hopeful", tags: ["hopeful", "romance"] },
-    ],
-  },
-  {
-    id: "demand",
-    prompt: "How demanding should the reading be?",
-    options: [
-      { label: "Clear and easy to follow", tags: ["brisk", "hopeful"] },
-      { label: "Thoughtful, with a little complexity", tags: ["medium", "quiet"] },
-      { label: "Genuinely difficult", tags: ["dense", "philosophy"] },
-      { label: "Strange and experimental", tags: ["dense", "20c"] },
-    ],
-  },
-  {
-    id: "commitment",
-    prompt: "How much of a commitment do you want?",
-    options: [
-      { label: "Short — read in a sitting or two", tags: ["short", "brisk"] },
-      { label: "Mid-length — a normal novel", tags: ["medium"] },
-      { label: "Long — a proper doorstop", tags: ["long"] },
-      { label: "Vast — a book to live in", tags: ["long", "epic", "dense"] },
-    ],
-  },
-  {
-    id: "form",
-    prompt: "Which form appeals to you?",
-    options: [
-      { label: "A full-length novel", tags: ["epic", "long"] },
-      { label: "A play or poetry", tags: ["tragedy", "ancient", "brisk"] },
-      { label: "Short stories", tags: ["short", "quiet"] },
-      { label: "A mystery or adventure", tags: ["mystery", "adventure"] },
-    ],
-  },
-];
-
-export const FREE_QUESTION_COUNT = FREE_QUESTIONS.length;
-export const FREE_LIBRARY_SIZE = 70;
-
-export function questionsFor(isPro: boolean): Question[] {
-  return isPro ? QUESTIONS : FREE_QUESTIONS;
-}
-
-
-export function libraryFor(isPro: boolean): Book[] {
-  return isPro ? BOOKS : BOOKS.slice(0, FREE_LIBRARY_SIZE);
+export function libraryFor(): Book[] {
+  return BOOKS;
 }
 
 export type Match = { book: Book; match: number };
 
-export function recommend(answers: Record<string, number>, isPro = true): Match[] {
-  const questions = questionsFor(isPro);
-  const pool = libraryFor(isPro);
+export function recommend(answers: Record<string, number>): Match[] {
+  const questions = QUESTIONS;
+  const pool = libraryFor();
   const chosen: string[] = [];
   for (const q of questions) {
     const i = answers[q.id];
