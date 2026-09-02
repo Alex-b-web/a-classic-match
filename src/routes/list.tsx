@@ -4,6 +4,7 @@ import logoAsset from "@/assets/logo.png.asset.json";
 import { BOOKS } from "@/data/books";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
+import { StoreSelect } from "@/components/StoreSelect";
 
 export const Route = createFileRoute("/list")({
   head: () => ({
