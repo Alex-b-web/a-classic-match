@@ -61,6 +61,14 @@ function ListPage() {
               0,
             )} pages ahead of you.`}
       </p>
+      {saved.length > 0 && (
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <span className="text-xs uppercase tracking-widest text-muted-foreground">
+            Buy links go to
+          </span>
+          <StoreSelect />
+        </div>
+      )}
       <div className="mt-6">
         {saved.map((b) => (
           <BookCard key={b.id} book={b} saved={has(b.id)} onToggle={() => toggle(b.id)} />
