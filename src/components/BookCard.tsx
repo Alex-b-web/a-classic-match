@@ -46,6 +46,7 @@ export function BookCard({
   saved: boolean;
   onToggle: () => void;
 }) {
+  const { store } = useStore();
   return (
     <article className="flex gap-4 border-b border-border/60 py-5">
       <Cover book={book} className="h-36 w-24 shrink-0" />
@@ -85,7 +86,7 @@ export function BookCard({
             {saved ? "On your list" : "Add to list"}
           </button>
           <a
-            href={amazonUrl(book)}
+            href={amazonUrlFor(book, store)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs tracking-wide text-primary-foreground transition-opacity hover:opacity-90"
