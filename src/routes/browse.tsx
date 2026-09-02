@@ -6,7 +6,6 @@ import logoAsset from "@/assets/logo.png.asset.json";
 import { libraryFor } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
-import { useTier } from "@/hooks/use-tier";
 import { StoreSelect } from "@/components/StoreSelect";
 
 
@@ -35,11 +34,10 @@ type SortKey = "title" | "author" | "year" | "pages";
 
 function BrowsePage() {
   const { toggle, has } = useShelf();
-  const { isPro } = useTier();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("title");
 
-  const library = useMemo(() => libraryFor(isPro), [isPro]);
+  const library = useMemo(() => libraryFor(), []);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -87,11 +85,6 @@ function BrowsePage() {
         Every classic we match on — search by title, author, year or theme.
       </p>
 
-      {!isPro && (
-        <p className="mt-4 text-sm text-muted-foreground">
-          You’re browsing the free shelf of {library.length} classics.
-        </p>
-      )}
 
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
