@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Bookmark, BookmarkCheck, ShoppingCart } from "lucide-react";
-import { amazonUrl, coverUrl, type Book } from "@/data/books";
+import { coverUrl, type Book } from "@/data/books";
+import { amazonUrlFor } from "@/lib/amazon";
+import { useStore } from "@/hooks/use-store";
 
 export function Cover({ book, className = "" }: { book: Book; className?: string }) {
   const [failed, setFailed] = useState(false);
