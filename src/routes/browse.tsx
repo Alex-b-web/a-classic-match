@@ -7,6 +7,7 @@ import { libraryFor } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 import { useTier } from "@/hooks/use-tier";
+import { StoreSelect } from "@/components/StoreSelect";
 
 
 export const Route = createFileRoute("/browse")({
@@ -104,6 +105,7 @@ function BrowsePage() {
             className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
         </label>
+        <StoreSelect />
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as SortKey)}

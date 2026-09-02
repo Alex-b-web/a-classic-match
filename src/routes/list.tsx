@@ -4,6 +4,7 @@ import logoAsset from "@/assets/logo.png.asset.json";
 import { BOOKS } from "@/data/books";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
+import { StoreSelect } from "@/components/StoreSelect";
 
 export const Route = createFileRoute("/list")({
   head: () => ({
@@ -60,6 +61,14 @@ function ListPage() {
               0,
             )} pages ahead of you.`}
       </p>
+      {saved.length > 0 && (
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <span className="text-xs uppercase tracking-widest text-muted-foreground">
+            Buy links go to
+          </span>
+          <StoreSelect />
+        </div>
+      )}
       <div className="mt-6">
         {saved.map((b) => (
           <BookCard key={b.id} book={b} saved={has(b.id)} onToggle={() => toggle(b.id)} />
