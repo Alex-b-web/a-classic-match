@@ -1,4 +1,5 @@
 import { BOOKS, type Book } from "./books";
+import { reasonsFor } from "@/lib/describe";
 
 export type Option = { label: string; hint?: string; tags: string[] };
 export type Question = { id: string; prompt: string; options: Option[] };
@@ -104,17 +105,22 @@ export function libraryFor(): Book[] {
   return BOOKS;
 }
 
-export type Match = { book: Book; match: number };
+export type Match = { book: Book; match: number; reasons: string[] };
 
-export function recommend(answers: Record<string, number>): Match[] {
-  const questions = QUESTIONS;
-  const pool = libraryFor();
+/** The tags behind the reader's answers, in the order they were chosen. */
+export function chosenTags(answers: Record<string, number>): string[] {
   const chosen: string[] = [];
-  for (const q of questions) {
+  for (const q of QUESTIONS) {
     const i = answers[q.id];
     const opt = i === undefined ? undefined : q.options[i];
     if (opt) chosen.push(...opt.tags);
   }
+  return chosen;
+}
+
+export function recommend(answers: Record<string, number>, count = 10): Match[] {
+  const pool = libraryFor();
+  const chosen = chosenTags(answers);
   const weight = new Map<string, number>();
   chosen.forEach((t, i) => weight.set(t, (weight.get(t) ?? 0) + (i < 3 ? 3 : 2)));
 
@@ -126,7 +132,7 @@ export function recommend(answers: Record<string, number>): Match[] {
       return { b, score, tie: score + (pool.length - idx) * 0.001 };
     })
     .sort((x, y) => y.tie - x.tie)
-    .slice(0, 10);
+    .slice(0, count);
 
   const top = scored[0]?.score ?? 0;
   return scored.map((x) => ({
@@ -134,6 +140,7 @@ export function recommend(answers: Record<string, number>): Match[] {
     // Relative fit: the strongest match sits near the top of the scale,
     // the rest scale down proportionally but stay readable.
     match: top > 0 ? Math.round(58 + (x.score / top) * 40) : 60,
+    reasons: reasonsFor(x.b.tags, chosen),
   }));
 }
 
