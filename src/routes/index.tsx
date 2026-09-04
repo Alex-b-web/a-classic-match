@@ -7,6 +7,7 @@ import { QUOTES, randomQuote } from "@/data/quotes";
 
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
+import { ANSWERS_KEY } from "@/lib/answers";
 
 
 export const Route = createFileRoute("/")({
@@ -44,7 +45,13 @@ function Index() {
   );
 
   const pick = (qid: string, i: number) => {
-    setAnswers((a) => ({ ...a, [qid]: i }));
+    const next = { ...answers, [qid]: i };
+    setAnswers(next);
+    try {
+      localStorage.setItem(ANSWERS_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore storage failures */
+    }
     if (step + 1 < QUESTIONS.length) setStep(step + 1);
     else setStage("results");
   };
@@ -68,6 +75,12 @@ function Index() {
             className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
           >
             Browse
+          </Link>
+          <Link
+            to="/plan"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            Plan
           </Link>
           <Link
             to="/list"
@@ -167,6 +180,7 @@ function Index() {
                 book={r.book}
                 rank={i + 1}
                 match={r.match}
+                reasons={r.reasons}
                 saved={has(r.book.id)}
                 onToggle={() => toggle(r.book.id)}
               />
@@ -175,8 +189,20 @@ function Index() {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/list"
+              to="/plan"
               className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-xs uppercase tracking-[0.2em] text-accent-foreground"
+            >
+              Build a reading plan
+            </Link>
+            <Link
+              to="/list"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-3 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
+            >
+              <Library className="size-4" /> View my list
+            </Link>
+            <Link
+              to="/__unused"
+              className="hidden items-center gap-2 rounded-full bg-accent px-5 py-3 text-xs uppercase tracking-[0.2em] text-accent-foreground"
             >
               <Library className="size-4" /> View my list
             </Link>
