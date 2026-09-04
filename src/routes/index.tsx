@@ -200,12 +200,6 @@ function Index() {
             >
               <Library className="size-4" /> View my list
             </Link>
-            <Link
-              to="/__unused"
-              className="hidden items-center gap-2 rounded-full bg-accent px-5 py-3 text-xs uppercase tracking-[0.2em] text-accent-foreground"
-            >
-              <Library className="size-4" /> View my list
-            </Link>
             <button
               onClick={() => {
                 setAnswers({});
