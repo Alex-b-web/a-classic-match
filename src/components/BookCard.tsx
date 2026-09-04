@@ -3,6 +3,7 @@ import { Bookmark, BookmarkCheck, ShoppingCart } from "lucide-react";
 import { coverUrl, type Book } from "@/data/books";
 import { amazonUrlFor } from "@/lib/amazon";
 import { useStore } from "@/hooks/use-store";
+import { authorBio } from "@/data/authors";
 
 export function Cover({ book, className = "" }: { book: Book; className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -37,12 +38,14 @@ export function BookCard({
   book,
   rank,
   match,
+  reasons,
   saved,
   onToggle,
 }: {
   book: Book;
   rank?: number;
   match?: number;
+  reasons?: string[];
   saved: boolean;
   onToggle: () => void;
 }) {
@@ -72,7 +75,18 @@ export function BookCard({
         <p className="mt-2 font-serif text-sm italic leading-snug text-foreground/80">
           {book.blurb}
         </p>
+        <p className="mt-2 text-sm leading-snug text-muted-foreground">
+          <span className="text-foreground/70">About the author: </span>
+          {authorBio(book.author, book.tags)}
+        </p>
+        {reasons && reasons.length > 0 && (
+          <p className="mt-2 text-sm leading-snug text-muted-foreground">
+            <span className="text-foreground/70">Why it suits you: </span>
+            you asked for {reasons.join(", ")}.
+          </p>
+        )}
         <div className="mt-3 flex flex-wrap items-center gap-2">
+
           <button
             onClick={onToggle}
             aria-pressed={saved}
