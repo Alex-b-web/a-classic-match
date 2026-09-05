@@ -22,10 +22,9 @@ export function bookLine(read: number, pages: number): string {
 }
 
 export function paceLine(pagesThisWeek: number, dailyGoal: number): string {
-  const goal = dailyGoal * 7;
-  if (pagesThisWeek === 0) return `Aim for ${dailyGoal} pages today to get started.`;
-  if (pagesThisWeek >= goal)
-    return `${pagesThisWeek} pages this week — ahead of your ${dailyGoal}-a-day pace.`;
-  const short = goal - pagesThisWeek;
-  return `${pagesThisWeek} pages this week, ${short} short of your ${dailyGoal}-a-day pace. Easily caught up.`;
+  if (pagesThisWeek === 0) return `aim for ${dailyGoal} pages today to get started`;
+  if (pagesThisWeek >= dailyGoal * 7)
+    return `${pagesThisWeek} pages this week, ahead of ${dailyGoal} a day`;
+  return `${pagesThisWeek} pages this week so far`;
 }
+
