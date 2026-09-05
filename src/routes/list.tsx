@@ -39,12 +39,21 @@ function ListPage() {
           />
           A Classic Match
         </Link>
-        <Link
-          to="/browse"
-          className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
-        >
-          Browse
-        </Link>
+        <nav className="flex items-center gap-4">
+          <Link
+            to="/reading"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            Record
+          </Link>
+          <Link
+            to="/browse"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            Browse
+          </Link>
+        </nav>
+
       </header>
       <Link
         to="/"

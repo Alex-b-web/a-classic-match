@@ -83,11 +83,18 @@ function Index() {
             Plan
           </Link>
           <Link
+            to="/reading"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            Record
+          </Link>
+          <Link
             to="/list"
             className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
           >
             <Library className="size-4" /> List
           </Link>
+
         </nav>
 
       </header>

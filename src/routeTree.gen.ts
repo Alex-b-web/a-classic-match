@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as ListRouteImport } from './routes/list'
 import { Route as PlanRouteImport } from './routes/plan'
+import { Route as ReadingRouteImport } from './routes/reading'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const PlanRoute = PlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReadingRoute = ReadingRouteImport.update({
+  id: '/reading',
+  path: '/reading',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/list': typeof ListRoute
   '/plan': typeof PlanRoute
+  '/reading': typeof ReadingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/list': typeof ListRoute
   '/plan': typeof PlanRoute
+  '/reading': typeof ReadingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/browse': typeof BrowseRoute
   '/list': typeof ListRoute
   '/plan': typeof PlanRoute
+  '/reading': typeof ReadingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse' | '/list' | '/plan'
+  fullPaths: '/' | '/browse' | '/list' | '/plan' | '/reading'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/list' | '/plan'
-  id: '__root__' | '/' | '/browse' | '/list' | '/plan'
+  to: '/' | '/browse' | '/list' | '/plan' | '/reading'
+  id: '__root__' | '/' | '/browse' | '/list' | '/plan' | '/reading'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   BrowseRoute: typeof BrowseRoute
   ListRoute: typeof ListRoute
   PlanRoute: typeof PlanRoute
+  ReadingRoute: typeof ReadingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reading': {
+      id: '/reading'
+      path: '/reading'
+      fullPath: '/reading'
+      preLoaderRoute: typeof ReadingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrowseRoute: BrowseRoute,
   ListRoute: ListRoute,
   PlanRoute: PlanRoute,
+  ReadingRoute: ReadingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
