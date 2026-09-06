@@ -3072,7 +3072,7 @@ export const BOOKS: Book[] = [
   },
   {
     id: "confessions-rousseau",
-    title: "Confessions",
+    title: "The Confessions of Jean-Jacques Rousseau",
     author: "Jean-Jacques Rousseau",
     year: 1782,
     pages: 656,
