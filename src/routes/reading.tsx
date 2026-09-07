@@ -108,21 +108,78 @@ function ReadingPage() {
               · {totalPages} pages logged in all.
             </p>
 
-            <div className="mt-5 flex items-end gap-2">
-              {last7.map((d) => (
-                <div key={d.date} className="flex flex-1 flex-col items-center gap-1.5">
-                  <span className="text-[0.65rem] text-muted-foreground">{d.pages || ""}</span>
-                  <div
-                    className={`w-full rounded-sm ${d.pages > 0 ? "bg-accent" : "bg-border"}`}
-                    style={{ height: `${Math.max(4, (d.pages / best) * 64)}px` }}
+            <div className="mt-5">
+              <svg
+                viewBox="0 0 280 90"
+                className="h-28 w-full overflow-visible"
+                role="img"
+                aria-label={`Pages read over the last seven days: ${last7
+                  .map((d) => `${d.date} ${d.pages}`)
+                  .join(", ")}`}
+              >
+                <defs>
+                  <linearGradient id="readingFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="currentColor" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                {[0, 1, 2].map((i) => (
+                  <line
+                    key={i}
+                    x1="0"
+                    x2="280"
+                    y1={8 + i * 27}
+                    y2={8 + i * 27}
+                    className="stroke-border"
+                    strokeWidth="1"
                   />
-                  <span className="text-[0.6rem] uppercase tracking-widest text-muted-foreground">
+                ))}
+                <polygon
+                  className="text-accent"
+                  fill="url(#readingFill)"
+                  points={`0,62 ${points} 280,62`}
+                />
+                <polyline
+                  points={points}
+                  fill="none"
+                  className="stroke-accent"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {last7.map((d, i) => (
+                  <g key={d.date}>
+                    <circle
+                      cx={i * (280 / 6)}
+                      cy={y(d.pages)}
+                      r="3.5"
+                      className="fill-accent"
+                    />
+                    {d.pages > 0 && (
+                      <text
+                        x={i * (280 / 6)}
+                        y={y(d.pages) - 8}
+                        textAnchor="middle"
+                        className="fill-muted-foreground text-[9px]"
+                      >
+                        {d.pages}
+                      </text>
+                    )}
+                  </g>
+                ))}
+              </svg>
+              <div className="mt-1 flex">
+                {last7.map((d) => (
+                  <span
+                    key={d.date}
+                    className="flex-1 text-center text-[0.6rem] uppercase tracking-widest text-muted-foreground"
+                  >
                     {new Date(`${d.date}T00:00:00`).toLocaleDateString(undefined, {
                       weekday: "narrow",
                     })}
                   </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
