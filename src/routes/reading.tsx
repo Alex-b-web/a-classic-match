@@ -46,6 +46,8 @@ function ReadingPage() {
   const pagesToday = pagesOnDay(date);
   const weekPages = last7.reduce((n, d) => n + d.pages, 0);
   const best = Math.max(1, ...last7.map((d) => d.pages));
+  const y = (pages: number) => 62 - (pages / best) * 54;
+  const points = last7.map((d, i) => `${i * (280 / 6)},${y(d.pages)}`).join(" ");
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
