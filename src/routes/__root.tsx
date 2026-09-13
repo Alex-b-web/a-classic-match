@@ -11,6 +11,30 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useSession } from "../hooks/use-session";
+import { startSync } from "../lib/sync";
+
+/** Keeps the signed-in reader's saved books, plan and page log in their account. */
+function CloudSync() {
+  const { user } = useSession();
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+    let stop: (() => void) | undefined;
+    let cancelled = false;
+    void startSync(userId).then((cleanup) => {
+      if (cancelled) cleanup();
+      else stop = cleanup;
+    });
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  }, [userId]);
+
+  return null;
+}
 
 function NotFoundComponent() {
   return (
