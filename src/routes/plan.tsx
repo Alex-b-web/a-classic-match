@@ -49,6 +49,33 @@ function PlanPage() {
     setLoaded(true);
   }, []);
 
+  // Remember the plan itself, so it survives a reload and syncs to the account.
+  useEffect(() => {
+    const load = () => {
+      try {
+        const raw = localStorage.getItem(PLAN_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw) as { picked?: string[]; pace?: number };
+        if (Array.isArray(saved.picked)) setPicked(saved.picked);
+        if (typeof saved.pace === "number") setPace(saved.pace);
+      } catch {
+        /* ignore unreadable plan */
+      }
+    };
+    load();
+    window.addEventListener("acm-plan-change", load);
+    return () => window.removeEventListener("acm-plan-change", load);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(PLAN_KEY, JSON.stringify({ picked, pace }));
+    } catch {
+      /* ignore storage failures */
+    }
+  }, [picked, pace, loaded]);
+
   const matches: Match[] = useMemo(
     () => (answers ? recommend(answers, 20) : []),
     [answers],
