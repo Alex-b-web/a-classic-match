@@ -110,12 +110,15 @@ function PlanPage() {
           <img src={logoAsset.url} alt="A Classic Match" className="size-7" loading="eager" />
           A Classic Match
         </Link>
-        <Link
-          to="/list"
-          className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
-        >
-          List
-        </Link>
+        <nav className="flex items-center gap-4">
+          <Link
+            to="/list"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            List
+          </Link>
+          <AccountNav />
+        </nav>
       </header>
 
       <Link
