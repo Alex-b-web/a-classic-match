@@ -6,6 +6,8 @@ import { recommend, type Match } from "@/data/quiz";
 import { Cover } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 import { ANSWERS_KEY } from "@/lib/answers";
+import { PLAN_KEY } from "@/lib/sync";
+import { AccountNav } from "@/components/AccountNav";
 
 export const Route = createFileRoute("/plan")({
   head: () => ({
