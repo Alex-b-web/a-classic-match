@@ -5,6 +5,7 @@ import { BOOKS } from "@/data/books";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 import { StoreSelect } from "@/components/StoreSelect";
+import { AccountNav } from "@/components/AccountNav";
 
 export const Route = createFileRoute("/list")({
   head: () => ({
@@ -52,6 +53,7 @@ function ListPage() {
           >
             Browse
           </Link>
+          <AccountNav />
         </nav>
 
       </header>

@@ -6,6 +6,8 @@ import { recommend, type Match } from "@/data/quiz";
 import { Cover } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 import { ANSWERS_KEY } from "@/lib/answers";
+import { PLAN_KEY } from "@/lib/sync";
+import { AccountNav } from "@/components/AccountNav";
 
 export const Route = createFileRoute("/plan")({
   head: () => ({
@@ -47,6 +49,33 @@ function PlanPage() {
     setLoaded(true);
   }, []);
 
+  // Remember the plan itself, so it survives a reload and syncs to the account.
+  useEffect(() => {
+    const load = () => {
+      try {
+        const raw = localStorage.getItem(PLAN_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw) as { picked?: string[]; pace?: number };
+        if (Array.isArray(saved.picked)) setPicked(saved.picked);
+        if (typeof saved.pace === "number") setPace(saved.pace);
+      } catch {
+        /* ignore unreadable plan */
+      }
+    };
+    load();
+    window.addEventListener("acm-plan-change", load);
+    return () => window.removeEventListener("acm-plan-change", load);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(PLAN_KEY, JSON.stringify({ picked, pace }));
+    } catch {
+      /* ignore storage failures */
+    }
+  }, [picked, pace, loaded]);
+
   const matches: Match[] = useMemo(
     () => (answers ? recommend(answers, 20) : []),
     [answers],
@@ -81,12 +110,15 @@ function PlanPage() {
           <img src={logoAsset.url} alt="A Classic Match" className="size-7" loading="eager" />
           A Classic Match
         </Link>
-        <Link
-          to="/list"
-          className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
-        >
-          List
-        </Link>
+        <nav className="flex items-center gap-4">
+          <Link
+            to="/list"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+          >
+            List
+          </Link>
+          <AccountNav />
+        </nav>
       </header>
 
       <Link

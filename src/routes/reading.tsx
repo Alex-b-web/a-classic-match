@@ -7,6 +7,7 @@ import { Cover } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 import { useReadingLog, today } from "@/hooks/use-reading-log";
 import { bookLine, paceLine, streakLine } from "@/lib/motivation";
+import { AccountNav } from "@/components/AccountNav";
 
 export const Route = createFileRoute("/reading")({
   head: () => ({
@@ -72,6 +73,7 @@ function ReadingPage() {
           >
             List
           </Link>
+          <AccountNav />
         </nav>
       </header>
 

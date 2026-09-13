@@ -6,6 +6,7 @@ import { QUESTIONS, recommend } from "@/data/quiz";
 import { QUOTES, randomQuote } from "@/data/quotes";
 
 import { BookCard } from "@/components/BookCard";
+import { AccountNav } from "@/components/AccountNav";
 import { useShelf } from "@/hooks/use-shelf";
 import { ANSWERS_KEY } from "@/lib/answers";
 
@@ -94,7 +95,7 @@ function Index() {
           >
             <Library className="size-4" /> List
           </Link>
-
+          <AccountNav />
         </nav>
 
       </header>
