@@ -53,6 +53,7 @@ function ListPage() {
           >
             Browse
           </Link>
+          <AccountNav />
         </nav>
 
       </header>
