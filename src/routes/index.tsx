@@ -94,7 +94,7 @@ function Index() {
           >
             <Library className="size-4" /> List
           </Link>
-
+          <AccountNav />
         </nav>
 
       </header>
