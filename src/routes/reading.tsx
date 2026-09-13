@@ -73,6 +73,7 @@ function ReadingPage() {
           >
             List
           </Link>
+          <AccountNav />
         </nav>
       </header>
 
