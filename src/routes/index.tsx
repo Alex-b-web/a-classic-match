@@ -60,8 +60,8 @@ function Index() {
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
-      <header className="flex items-center justify-between">
-        <span className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground">
+      <header className="flex flex-wrap items-center justify-between gap-y-3">
+        <span className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.2em] text-muted-foreground sm:tracking-[0.3em]">
           <img
             src={logoAsset.url}
             alt="A Classic Match"
@@ -70,28 +70,28 @@ function Index() {
           />
           A Classic Match
         </span>
-        <nav className="flex items-center gap-4">
+        <nav className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-4">
           <Link
             to="/browse"
-            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+            className="text-[0.7rem] uppercase tracking-widest text-muted-foreground hover:text-accent sm:text-xs"
           >
             Browse
           </Link>
           <Link
             to="/plan"
-            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+            className="text-[0.7rem] uppercase tracking-widest text-muted-foreground hover:text-accent sm:text-xs"
           >
             Plan
           </Link>
           <Link
             to="/reading"
-            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+            className="text-[0.7rem] uppercase tracking-widest text-muted-foreground hover:text-accent sm:text-xs"
           >
             Record
           </Link>
           <Link
             to="/list"
-            className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+            className="flex items-center gap-1.5 text-[0.7rem] uppercase tracking-widest text-muted-foreground hover:text-accent sm:text-xs"
           >
             <Library className="size-4" /> List
           </Link>
@@ -116,7 +116,7 @@ function Index() {
           </footer>
 
           <div className="mt-14 h-px w-24 bg-gilt" />
-          <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
+          <p className="mt-6 max-w-md font-serif text-xl leading-relaxed text-foreground">
             {`${QUESTIONS.length} questions on taste, era and temperament. Ten classics chosen to fit.`}
           </p>
 
