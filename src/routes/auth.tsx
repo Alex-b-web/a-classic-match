@@ -3,7 +3,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useSession } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/auth")({
@@ -62,14 +61,6 @@ function AuthPage() {
     setBusy(false);
   };
 
-  const google = async () => {
-    setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) setError("Google sign-in did not work. Please try again.");
-  };
-
   return (
     <main className="mx-auto min-h-screen w-full max-w-md px-5 pb-20 pt-8">
       <header className="flex items-center justify-between">
@@ -97,20 +88,7 @@ function AuthPage() {
         you to any device.
       </p>
 
-      <button
-        onClick={google}
-        className="mt-6 w-full rounded-md border border-border bg-card px-4 py-3 font-serif text-base text-foreground transition-colors hover:border-accent hover:bg-secondary"
-      >
-        Continue with Google
-      </button>
-
-      <div className="my-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-border" />
-        <span className="text-xs uppercase tracking-widest text-muted-foreground">or</span>
-        <span className="h-px flex-1 bg-border" />
-      </div>
-
-      <form onSubmit={submit} className="space-y-3">
+      <form onSubmit={submit} className="mt-6 space-y-3">
         <label className="block">
           <span className="text-xs uppercase tracking-widest text-muted-foreground">Email</span>
           <input
