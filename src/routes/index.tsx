@@ -116,7 +116,7 @@ function Index() {
           </footer>
 
           <div className="mt-14 h-px w-24 bg-gilt" />
-          <p className="mt-6 max-w-sm font-serif text-lg leading-snug text-foreground/80">
+          <p className="mt-6 max-w-md font-serif text-xl leading-relaxed text-foreground">
             {`${QUESTIONS.length} questions on taste, era and temperament. Ten classics chosen to fit.`}
           </p>
 
