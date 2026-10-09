@@ -9,6 +9,8 @@ import { BookCard } from "@/components/BookCard";
 import { AccountNav } from "@/components/AccountNav";
 import { useShelf } from "@/hooks/use-shelf";
 import { ANSWERS_KEY } from "@/lib/answers";
+import { useRatings } from "@/hooks/use-ratings";
+import { useSession } from "@/hooks/use-session";
 
 
 export const Route = createFileRoute("/")({
@@ -37,13 +39,22 @@ function Index() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
+  const { ratings } = useRatings();
+  const { user, ready } = useSession();
+  const [popup, setPopup] = useState(false);
   // Pick a fresh quote after hydration so each page load shows a different one.
   const [quote, setQuote] = useState(QUOTES[0]!);
   useEffect(() => setQuote(randomQuote()), []);
   const results = useMemo(
-    () => (stage === "results" ? recommend(answers) : []),
-    [stage, answers],
+    () => (stage === "results" ? recommend(answers, 10, ratings) : []),
+    [stage, answers, ratings],
   );
+  useEffect(() => {
+    if (stage === "results" && ready && !user) {
+      const t = window.setTimeout(() => setPopup(true), 1200);
+      return () => window.clearTimeout(t);
+    }
+  }, [stage, ready, user]);
 
   const pick = (qid: string, i: number) => {
     const next = { ...answers, [qid]: i };
@@ -180,6 +191,55 @@ function Index() {
           <p className="mt-2 text-sm text-muted-foreground">
             Tap the heart to save a book — your list keeps a link to buy it.
           </p>
+          {ready && !user && (
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-accent bg-card p-4">
+              <p className="font-serif text-lg text-foreground">Keep these matches on any device.</p>
+              <Link
+                to="/auth"
+                search={{ mode: "signup" }}
+                className="rounded-full bg-accent px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-accent-foreground"
+              >
+                Log in to save
+              </Link>
+            </div>
+          )}
+          {popup && !user && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="save-title"
+              className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 p-4 sm:items-center"
+            >
+              <div className="w-full max-w-sm animate-[var(--animate-rise)] rounded-lg border border-border bg-background p-6 shadow-xl">
+                <h2 id="save-title" className="font-serif text-2xl text-foreground">
+                  Save your matches
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Create a free account so your ten classics, list and reading streak are never lost.
+                  Anything already saved here moves into your account.
+                </p>
+                <Link
+                  to="/auth"
+                  search={{ mode: "signup" }}
+                  className="mt-5 block rounded-full bg-accent px-5 py-3 text-center text-xs uppercase tracking-[0.2em] text-accent-foreground"
+                >
+                  Create free account
+                </Link>
+                <Link
+                  to="/auth"
+                  className="mt-2 block rounded-full border border-border px-5 py-3 text-center text-xs uppercase tracking-[0.2em] text-foreground"
+                >
+                  I already have one
+                </Link>
+                <button
+                  onClick={() => setPopup(false)}
+                  className="mt-3 w-full text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="mt-6">
             {results.map((r, i) => (
