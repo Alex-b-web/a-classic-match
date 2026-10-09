@@ -27,6 +27,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Nine questions, ten classic novels chosen for you.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,

@@ -3,9 +3,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useSession } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>): { mode?: "signup" } =>
+    s.mode === "signup" ? { mode: "signup" } : {},
   head: () => ({
     meta: [
       { title: "Sign In or Create an Account — A Classic Match" },
@@ -29,7 +32,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { user, ready } = useSession();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">(Route.useSearch().mode ?? "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -88,7 +91,25 @@ function AuthPage() {
         you to any device.
       </p>
 
-      <form onSubmit={submit} className="mt-6 space-y-3">
+      <div className="mt-6 space-y-2">
+        {(["google", "apple"] as const).map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={async () => {
+              setError(null);
+              const r = await lovable.auth.signInWithOAuth(p, { redirect_uri: window.location.origin });
+              if (r.error) setError(`${p === "google" ? "Google" : "Apple"} sign-in isn't available yet — please use email.`);
+            }}
+            className="w-full rounded-full border border-border bg-card px-5 py-3 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
+          >
+            Continue with {p === "google" ? "Google" : "Apple"}
+          </button>
+        ))}
+        <p className="pt-2 text-center text-xs uppercase tracking-widest text-muted-foreground">or use email</p>
+      </div>
+
+      <form onSubmit={submit} className="mt-3 space-y-3">
         <label className="block">
           <span className="text-xs uppercase tracking-widest text-muted-foreground">Email</span>
           <input
