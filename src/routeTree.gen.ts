@@ -10,15 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ListRouteImport } from './routes/list'
 import { Route as PlanRouteImport } from './routes/plan'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReadingRouteImport } from './routes/reading'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -31,6 +45,11 @@ const BrowseRoute = BrowseRouteImport.update({
   path: '/browse',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ListRoute = ListRouteImport.update({
   id: '/list',
   path: '/list',
@@ -41,6 +60,11 @@ const PlanRoute = PlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadingRoute = ReadingRouteImport.update({
   id: '/reading',
   path: '/reading',
@@ -49,43 +73,90 @@ const ReadingRoute = ReadingRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
   '/list': typeof ListRoute
   '/plan': typeof PlanRoute
+  '/privacy': typeof PrivacyRoute
   '/reading': typeof ReadingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
   '/list': typeof ListRoute
   '/plan': typeof PlanRoute
+  '/privacy': typeof PrivacyRoute
   '/reading': typeof ReadingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
   '/list': typeof ListRoute
   '/plan': typeof PlanRoute
+  '/privacy': typeof PrivacyRoute
   '/reading': typeof ReadingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/browse' | '/list' | '/plan' | '/reading'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/account'
+    | '/auth'
+    | '/browse'
+    | '/cookies'
+    | '/list'
+    | '/plan'
+    | '/privacy'
+    | '/reading'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/browse' | '/list' | '/plan' | '/reading'
-  id: '__root__' | '/' | '/auth' | '/browse' | '/list' | '/plan' | '/reading'
+  to:
+    | '/'
+    | '/about'
+    | '/account'
+    | '/auth'
+    | '/browse'
+    | '/cookies'
+    | '/list'
+    | '/plan'
+    | '/privacy'
+    | '/reading'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/account'
+    | '/auth'
+    | '/browse'
+    | '/cookies'
+    | '/list'
+    | '/plan'
+    | '/privacy'
+    | '/reading'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
+  CookiesRoute: typeof CookiesRoute
   ListRoute: typeof ListRoute
   PlanRoute: typeof PlanRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReadingRoute: typeof ReadingRoute
 }
 
@@ -96,6 +167,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -112,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/list': {
       id: '/list'
       path: '/list'
@@ -126,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reading': {
       id: '/reading'
       path: '/reading'
@@ -138,10 +237,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
+  CookiesRoute: CookiesRoute,
   ListRoute: ListRoute,
   PlanRoute: PlanRoute,
+  PrivacyRoute: PrivacyRoute,
   ReadingRoute: ReadingRoute,
 }
 export const routeTree = rootRouteImport
