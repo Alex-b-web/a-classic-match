@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useSession } from "../hooks/use-session";
 import { startSync } from "../lib/sync";
+import { CookieNotice, SiteFooter } from "../components/SiteFooter";
 
 /** Keeps the signed-in reader's saved books, plan and page log in their account. */
 function CloudSync() {
@@ -153,6 +154,8 @@ function RootComponent() {
       <CloudSync />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <SiteFooter />
+      <CookieNotice />
     </QueryClientProvider>
   );
 }

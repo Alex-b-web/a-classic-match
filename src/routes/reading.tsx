@@ -8,6 +8,7 @@ import { useShelf } from "@/hooks/use-shelf";
 import { useReadingLog, today } from "@/hooks/use-reading-log";
 import { bookLine, paceLine, streakLine } from "@/lib/motivation";
 import { AccountNav } from "@/components/AccountNav";
+import { Achievements } from "@/components/Achievements";
 
 export const Route = createFileRoute("/reading")({
   head: () => ({
@@ -282,6 +283,7 @@ function ReadingPage() {
           </div>
         </>
       )}
+      <Achievements />
     </main>
   );
 }

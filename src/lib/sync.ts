@@ -5,12 +5,16 @@ export const SHELF_KEY = "canon-shelf-v1";
 export const LOG_KEY = "acm-reading-log-v1";
 export const ANSWERS_KEY_SYNC = "acm-answers-v1";
 export const PLAN_KEY = "acm-plan-v1";
+export const RATINGS_KEY_SYNC = "acm-ratings-v1";
+export const GOAL_KEY_SYNC = "acm-goal-v1";
 
 export type ReaderState = {
   shelf?: string[];
   log?: Record<string, Record<string, number>>;
   answers?: Record<string, number>;
   plan?: { picked: string[]; pace: number };
+  ratings?: Record<string, { stars: number; review: string; date: string }>;
+  goal?: number;
 };
 
 function readJson<T>(key: string): T | undefined {
@@ -40,6 +44,10 @@ export function localState(): ReaderState {
   if (log) state.log = log;
   if (answers) state.answers = answers;
   if (plan) state.plan = plan;
+  const ratings = readJson<ReaderState["ratings"]>(RATINGS_KEY_SYNC);
+  const goal = readJson<number>(GOAL_KEY_SYNC);
+  if (ratings) state.ratings = ratings;
+  if (goal) state.goal = goal;
   return state;
 }
 
@@ -62,6 +70,9 @@ export function merge(remote: ReaderState, local: ReaderState): ReaderState {
   const plan = local.plan ?? remote.plan;
   if (answers) merged.answers = answers;
   if (plan) merged.plan = plan;
+  merged.ratings = { ...(remote.ratings ?? {}), ...(local.ratings ?? {}) };
+  const goal = local.goal ?? remote.goal;
+  if (goal) merged.goal = goal;
   return merged;
 }
 
@@ -70,6 +81,9 @@ function applyLocally(state: ReaderState) {
   writeJson(LOG_KEY, state.log ?? {});
   if (state.answers) writeJson(ANSWERS_KEY_SYNC, state.answers);
   if (state.plan) writeJson(PLAN_KEY, state.plan);
+  writeJson(RATINGS_KEY_SYNC, state.ratings ?? {});
+  if (state.goal) writeJson(GOAL_KEY_SYNC, state.goal);
+  window.dispatchEvent(new Event("acm-ratings-change"));
   window.dispatchEvent(new Event("canon-shelf-change"));
   window.dispatchEvent(new Event("acm-reading-log-change"));
   window.dispatchEvent(new Event("acm-plan-change"));

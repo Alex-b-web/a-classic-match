@@ -118,11 +118,24 @@ export function chosenTags(answers: Record<string, number>): string[] {
   return chosen;
 }
 
-export function recommend(answers: Record<string, number>, count = 10): Match[] {
-  const pool = libraryFor();
+export function recommend(
+  answers: Record<string, number>,
+  count = 10,
+  ratings: Record<string, { stars: number }> = {},
+): Match[] {
+  // Books the reader has rated are finished — don't suggest them again.
+  const pool = libraryFor().filter((b) => !ratings[b.id]);
   const chosen = chosenTags(answers);
   const weight = new Map<string, number>();
   chosen.forEach((t, i) => weight.set(t, (weight.get(t) ?? 0) + (i < 3 ? 3 : 2)));
+  // Ratings nudge future picks: loved books lift their themes, disliked ones lower them.
+  for (const [id, r] of Object.entries(ratings)) {
+    const b = libraryFor().find((x) => x.id === id);
+    if (!b) continue;
+    const delta = (r.stars - 3) * 0.75;
+    for (const t of b.tags) weight.set(t, (weight.get(t) ?? 0) + delta);
+  }
+
 
   const scored = [...pool]
     .map((b, idx) => {
