@@ -1,0 +1,30 @@
+name: Deploy Supabase functions
+
+on:
+ push:
+   branches: [main]
+   paths: ["supabase/functions/**"]
+ workflow_dispatch:
+
+jobs:
+ deploy:
+   runs-on: ubuntu-latest
+   env:
+     SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+     PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+   steps:
+     - uses: actions/checkout@v4
+     - uses: supabase/setup-cli@v1
+       with:
+         version: latest
+     - name: Set function secrets
+       env:
+         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+         CRON_SECRET: ${{ secrets.CRON_SECRET }}
+       run: |
+         supabase secrets set --project-ref "$PROJECT_REF" \
+           RESEND_API_KEY="$RESEND_API_KEY" \
+           CRON_SECRET="$CRON_SECRET" \
+           REMINDER_FROM="A Classic Match <hello@aclassicmatch.com>" \
+           SITE_URL="https://www.aclassicmatch.com"
+     - run: supabase functions deploy --project-ref "$PROJECT_REF" --no-verify-jwt --use-api
