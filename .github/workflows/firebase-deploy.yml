@@ -44,6 +44,20 @@ jobs:
           printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
 
+      - name: Diagnose service account (safe to read)
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: |
+          EMAIL=$(python3 -c "import json,os;d=json.load(open(os.environ['GOOGLE_APPLICATION_CREDENTIALS']));print(d.get('client_email',''));print('project_id in key:',d.get('project_id'),file=__import__('sys').stderr)")
+          echo "service account: $EMAIL"
+          gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet
+          echo "--- project:"; gcloud projects describe aclassicmatch --format='value(projectId,lifecycleState)' 2>&1 || true
+          echo "--- roles for this account on the project:"
+          gcloud projects get-iam-policy aclassicmatch --flatten=bindings --filter="bindings.members:serviceAccount:$EMAIL" --format='value(bindings.role)' 2>&1 || true
+          echo "--- firebase-related APIs enabled:"
+          gcloud services list --enabled --project aclassicmatch 2>&1 | grep -i -E "firebase|firestore|serviceusage|cloudresourcemanager|iam" || echo "NONE of the firebase APIs are enabled"
+
       # firebase.json runs `npm run build` first, so the website is built here.
       - name: Deploy hosting and Firestore rules
         run: npx firebase-tools@14 deploy --only hosting,firestore:rules --non-interactive
