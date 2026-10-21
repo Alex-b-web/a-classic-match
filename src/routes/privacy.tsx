@@ -14,7 +14,7 @@ export const Route = createFileRoute("/privacy")({
       </p>
       <h2>What we collect</h2>
       <ul>
-        <li>Account details: your email address (and name, if you sign in with Google or Apple).</li>
+        <li>Account details: your email address (and name, if you sign in with Google).</li>
         <li>Reading data: saved books, quiz answers, reading plan, pages logged, ratings, reviews and reading goal.</li>
         <li>Technical data needed to keep you signed in securely.</li>
       </ul>

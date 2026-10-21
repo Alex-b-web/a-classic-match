@@ -52,14 +52,14 @@ function AuthPage() {
   // Default to a one-tap email link; a password stays available for readers who prefer it.
   const [usePassword, setUsePassword] = useState(false);
   const [linkSent, setLinkSent] = useState(false);
-  // Apple / Google buttons appear only once they are switched on in config.js (signInWith),
+  // The Google button appears only once it is switched on in config.js (signInWith),
   // so readers never land on an error page for a provider that isn't set up yet.
-  const [providers, setProviders] = useState<Array<"google" | "apple">>([]);
+  const [providers, setProviders] = useState<Array<"google">>([]);
   useEffect(() => {
     const list = (window as unknown as { ACM_CONFIG?: { signInWith?: string[] } }).ACM_CONFIG
       ?.signInWith;
     if (Array.isArray(list))
-      setProviders((["google", "apple"] as const).filter((p) => list.includes(p)));
+      setProviders((["google"] as const).filter((p) => list.includes(p)));
   }, []);
 
   const sendLink = async () => {
@@ -161,7 +161,7 @@ function AuthPage() {
                 type="button"
                 onClick={async () => {
                   setError(null);
-                  // Hands over to Google or Apple, then comes back to the site signed in.
+                  // Hands over to Google, then comes back to the site signed in.
                   let err: unknown = null;
                   try {
                     ({ error: err } = await supabase.auth.signInWithOAuth({
@@ -173,12 +173,12 @@ function AuthPage() {
                   }
                   if (err)
                     setError(
-                      `${p === "google" ? "Google" : "Apple"} sign-in isn't switched on yet. Please use email for now.`,
+                      "Google sign-in isn't switched on yet. Please use email for now.",
                     );
                 }}
                 className="w-full rounded-full border border-border bg-card px-5 py-3 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
               >
-                Continue with {p === "google" ? "Google" : "Apple"}
+                Continue with Google
               </button>
             ))}
             {providers.length > 0 && (

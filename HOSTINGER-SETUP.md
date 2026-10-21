@@ -108,20 +108,16 @@ From now on, every hour Supabase emails readers who turned reminders on, haven't
    Save. You can change this file any time without rebuilding the site.
 5. hPanel → **Security → SSL**: make sure SSL is **active** for `aclassicmatch.com` and `www`.
 
-## 8. Optional: Google and Apple sign-in
+## 8. Optional: Google sign-in
 
-Email sign-in works without this step. Apple and Google buttons appear only after you add them to `signInWith` in `config.js`.
+Email sign-in works without this step. The Google button appears only after you add `"google"` to `signInWith` in `config.js`.
 
-The return address both of them need is:
+The return address Google needs is:
 `https://YOUR-PROJECT-REF.supabase.co/auth/v1/callback`
 
 - **Google (free):** Google Cloud Console → APIs & Services → **Credentials → Create OAuth client ID → Web application**. Add the return address above under *Authorised redirect URIs*. Copy the Client ID and Secret into Supabase → **Authentication → Sign In / Providers → Google** and switch it on. Then set `signInWith: ["google"]`.
-- **Apple:** needs a paid **Apple Developer Program** membership (about £79 / $99 a year). In Apple Developer → Certificates, IDs & Profiles:
-  1. Create an **App ID** with *Sign in with Apple*.
-  2. Create a **Services ID** (this becomes the Client ID). Set its domain to `aclassicmatch.com` and its return URL to the address above.
-  3. Create a **key** with *Sign in with Apple*.
 
-  Enter these in Supabase → **Providers → Apple**. Supabase's Apple guide walks through generating the secret from the key. Then set `signInWith: ["google", "apple"]`.
+Apple sign-in is not offered on the site.
 
 ## 9. Test it
 
