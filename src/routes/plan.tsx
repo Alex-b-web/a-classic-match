@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, Plus } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
 import { recommend, type Match } from "@/data/quiz";
 import { Cover } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
@@ -107,7 +106,7 @@ function PlanPage() {
           to="/"
           className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <img src={logoAsset.url} alt="A Classic Match" className="size-7" loading="eager" />
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />
           A Classic Match
         </Link>
         <nav className="flex items-center gap-4">

@@ -1,0 +1,53 @@
+# Deploys the website (Firebase Hosting) and the Firestore security rules every time code
+# is pushed to the main branch, and can also be run by hand from the Actions tab.
+#
+# One-time setup (see FIREBASE-SETUP.md, section 5):
+#   • GitHub repo → Settings → Secrets and variables → Actions → New repository secret
+#     Name:  FIREBASE_SERVICE_ACCOUNT
+#     Value: the JSON key of the Firebase service account (created by `firebase init hosting:github`
+#            or in Google Cloud console)
+#   • The Firebase project ID is set in .firebaserc
+name: Deploy to Firebase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: firebase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Write Firebase credentials
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SA" ]; then
+            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT is missing. See FIREBASE-SETUP.md, section 5."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
+
+      # firebase.json runs `npm run build` first, so the website is built here.
+      - name: Deploy hosting and Firestore rules
+        run: npx firebase-tools@14 deploy --only hosting,firestore:rules --non-interactive
+
+      - name: Remove credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"

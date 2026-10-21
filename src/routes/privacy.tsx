@@ -41,7 +41,10 @@ export const Route = createFileRoute("/privacy")({
         You may also complain to the Information Commissioner’s Office (ico.org.uk).
       </p>
       <h2>Contact</h2>
-      <p className="italic text-muted-foreground">Contact details will be added soon.</p>
+      <p>
+        For any question about your data, or to use any of your rights, email{" "}
+        <a href="mailto:hello@aclassicmatch.com" className="underline">hello@aclassicmatch.com</a>.
+      </p>
     </InfoPage>
   ),
 });

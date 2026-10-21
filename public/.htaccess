@@ -1,0 +1,17 @@
+# A Classic Match on Hostinger (Apache / LiteSpeed)
+DirectoryIndex index.html
+Options -Indexes
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# Always use https
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Always fetch the latest pages and settings file.
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|404\.html|config\.js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

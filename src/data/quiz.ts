@@ -122,9 +122,11 @@ export function recommend(
   answers: Record<string, number>,
   count = 10,
   ratings: Record<string, { stars: number }> = {},
+  finished: string[] = [],
 ): Match[] {
-  // Books the reader has rated are finished — don't suggest them again.
-  const pool = libraryFor().filter((b) => !ratings[b.id]);
+  // Books the reader has rated or finished are already read — don't suggest them again.
+  const done = new Set(finished);
+  const pool = libraryFor().filter((b) => !ratings[b.id] && !done.has(b.id));
   const chosen = chosenTags(answers);
   const weight = new Map<string, number>();
   chosen.forEach((t, i) => weight.set(t, (weight.get(t) ?? 0) + (i < 3 ? 3 : 2)));

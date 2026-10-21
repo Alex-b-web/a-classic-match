@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { InfoPage, meta } from "@/components/InfoPage";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteMyAccount } from "@/lib/account.functions";
+import { ReminderSettings } from "@/components/ReminderSettings";
 
 const LOCAL_KEYS = [
   "canon-shelf-v1",
@@ -13,17 +12,18 @@ const LOCAL_KEYS = [
   "acm-plan-v1",
   "acm-ratings-v1",
   "acm-goal-v1",
+  "acm-reminders-v1",
 ];
 
 export const Route = createFileRoute("/account")({
-  head: () => meta("Your Account", "Manage your A Classic Match account, sign out or delete your data."),
+  head: () =>
+    meta("Your Account", "Manage your A Classic Match account, sign out or delete your data."),
   component: AccountPage,
 });
 
 function AccountPage() {
   const { user, ready } = useSession();
   const navigate = useNavigate();
-  const del = useServerFn(deleteMyAccount);
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,10 @@ function AccountPage() {
     return (
       <InfoPage title="Your account">
         <p>You're not signed in.</p>
-        <Link to="/auth" className="inline-block rounded-full bg-accent px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-accent-foreground">
+        <Link
+          to="/auth"
+          className="inline-block rounded-full bg-accent px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-accent-foreground"
+        >
           Sign in
         </Link>
       </InfoPage>
@@ -43,7 +46,9 @@ function AccountPage() {
 
   return (
     <InfoPage title="Your account">
-      <p>Signed in as <strong>{user.email}</strong></p>
+      <p>
+        Signed in as <strong>{user.email}</strong>
+      </p>
       <button
         onClick={async () => {
           await supabase.auth.signOut();
@@ -53,6 +58,9 @@ function AccountPage() {
       >
         Sign out
       </button>
+
+      <h2>Emails</h2>
+      <ReminderSettings />
 
       <h2>Delete account</h2>
       <p>
@@ -74,7 +82,11 @@ function AccountPage() {
               setBusy(true);
               setError(null);
               try {
-                await del();
+                // Runs the "delete-account" Supabase function, which erases the account and its data.
+                const { error: fnError } = await supabase.functions.invoke("delete-account", {
+                  method: "POST",
+                });
+                if (fnError) throw fnError;
                 clearLocal();
                 await supabase.auth.signOut();
                 navigate({ to: "/", replace: true });
@@ -87,7 +99,10 @@ function AccountPage() {
           >
             {busy ? "Deleting…" : "Yes, delete everything"}
           </button>
-          <button onClick={() => setConfirm(false)} className="rounded-full border border-border px-5 py-2.5 text-xs uppercase tracking-[0.2em]">
+          <button
+            onClick={() => setConfirm(false)}
+            className="rounded-full border border-border px-5 py-2.5 text-xs uppercase tracking-[0.2em]"
+          >
             Cancel
           </button>
         </div>
