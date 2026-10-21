@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "deploy:firebase": "npx firebase-tools@14 deploy --only hosting"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

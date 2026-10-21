@@ -7,6 +7,7 @@ export const ANSWERS_KEY_SYNC = "acm-answers-v1";
 export const PLAN_KEY = "acm-plan-v1";
 export const RATINGS_KEY_SYNC = "acm-ratings-v1";
 export const GOAL_KEY_SYNC = "acm-goal-v1";
+export const REMINDERS_KEY_SYNC = "acm-reminders-v1";
 
 export type ReaderState = {
   shelf?: string[];
@@ -15,6 +16,7 @@ export type ReaderState = {
   plan?: { picked: string[]; pace: number };
   ratings?: Record<string, { stars: number; review: string; date: string }>;
   goal?: number;
+  reminders?: { on: boolean; hour: number; tz: string };
 };
 
 function readJson<T>(key: string): T | undefined {
@@ -48,6 +50,8 @@ export function localState(): ReaderState {
   const goal = readJson<number>(GOAL_KEY_SYNC);
   if (ratings) state.ratings = ratings;
   if (goal) state.goal = goal;
+  const reminders = readJson<ReaderState["reminders"]>(REMINDERS_KEY_SYNC);
+  if (reminders) state.reminders = reminders;
   return state;
 }
 
@@ -73,6 +77,8 @@ export function merge(remote: ReaderState, local: ReaderState): ReaderState {
   merged.ratings = { ...(remote.ratings ?? {}), ...(local.ratings ?? {}) };
   const goal = local.goal ?? remote.goal;
   if (goal) merged.goal = goal;
+  const reminders = local.reminders ?? remote.reminders;
+  if (reminders) merged.reminders = reminders;
   return merged;
 }
 
@@ -83,6 +89,8 @@ function applyLocally(state: ReaderState) {
   if (state.plan) writeJson(PLAN_KEY, state.plan);
   writeJson(RATINGS_KEY_SYNC, state.ratings ?? {});
   if (state.goal) writeJson(GOAL_KEY_SYNC, state.goal);
+  if (state.reminders) writeJson(REMINDERS_KEY_SYNC, state.reminders);
+  window.dispatchEvent(new Event("acm-reminders-change"));
   window.dispatchEvent(new Event("acm-ratings-change"));
   window.dispatchEvent(new Event("canon-shelf-change"));
   window.dispatchEvent(new Event("acm-reading-log-change"));

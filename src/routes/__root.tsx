@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useSession } from "../hooks/use-session";
 import { startSync } from "../lib/sync";
+import { supabase } from "../integrations/supabase/client";
 import { CookieNotice, SiteFooter } from "../components/SiteFooter";
 
 /** Keeps the signed-in reader's saved books, plan and page log in their account. */
@@ -28,6 +29,27 @@ function CloudSync() {
       if (cancelled) cleanup();
       else stop = cleanup;
     });
+
+    // Ask for the welcome email once per account on this browser. The "welcome-email" Supabase
+    // function also remembers who it has welcomed, so a new device never sends a second one.
+    const welcomedKey = `acm-welcomed-${userId}`;
+    let welcomed = false;
+    try {
+      welcomed = localStorage.getItem(welcomedKey) === "1";
+    } catch {
+      /* storage unavailable */
+    }
+    if (!welcomed) {
+      void supabase.functions.invoke("welcome-email", { method: "POST" }).then(({ error }) => {
+        if (!error) {
+          try {
+            localStorage.setItem(welcomedKey, "1");
+          } catch {
+            /* storage unavailable */
+          }
+        }
+      });
+    }
     return () => {
       cancelled = true;
       stop?.();
@@ -122,8 +144,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Karla:wght@400;500;600&display=swap",
       },
+      { rel: "icon", type: "image/svg+xml", href: "/logo.svg" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
+    // Site settings (Supabase address and public key). Loaded before the app so sign-in works.
+    scripts: [{ src: "/config.js" }],
   }),
 
   shellComponent: RootShell,

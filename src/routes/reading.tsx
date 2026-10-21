@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Flame, Minus, Plus } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
 import { BOOKS } from "@/data/books";
 import { Cover } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
@@ -9,6 +8,7 @@ import { useReadingLog, today } from "@/hooks/use-reading-log";
 import { bookLine, paceLine, streakLine } from "@/lib/motivation";
 import { AccountNav } from "@/components/AccountNav";
 import { Achievements } from "@/components/Achievements";
+import { ReminderSettings } from "@/components/ReminderSettings";
 
 export const Route = createFileRoute("/reading")({
   head: () => ({
@@ -58,7 +58,7 @@ function ReadingPage() {
           to="/"
           className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <img src={logoAsset.url} alt="A Classic Match" className="size-7" loading="eager" />
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />
           A Classic Match
         </Link>
         <nav className="flex items-center gap-4">
@@ -187,6 +187,14 @@ function ReadingPage() {
               </div>
             </div>
           </div>
+
+          <ReminderSettings
+            preview={{
+              streak: Math.max(streak, 1),
+              book: books.find((b) => totalFor(b.id) < b.pages) ?? null,
+              read: (id) => totalFor(id),
+            }}
+          />
 
           <h2 className="mt-10 font-serif text-xs uppercase tracking-[0.3em] text-accent">
             Log today&rsquo;s pages

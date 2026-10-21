@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Library } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
 import { QUESTIONS, recommend } from "@/data/quiz";
 import { QUOTES, randomQuote } from "@/data/quotes";
 
@@ -11,6 +10,8 @@ import { useShelf } from "@/hooks/use-shelf";
 import { ANSWERS_KEY } from "@/lib/answers";
 import { useRatings } from "@/hooks/use-ratings";
 import { useSession } from "@/hooks/use-session";
+import { useReadingLog } from "@/hooks/use-reading-log";
+import { BOOKS } from "@/data/books";
 
 
 export const Route = createFileRoute("/")({
@@ -42,14 +43,25 @@ function Index() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const { toggle, has } = useShelf();
   const { ratings } = useRatings();
+  const { totalFor, log } = useReadingLog();
+  // Books whose every page has been logged count as read, rated or not.
+  const finished = useMemo(
+    () => BOOKS.filter((b) => totalFor(b.id) >= b.pages).map((b) => b.id),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [log],
+  );
+  const skipped = useMemo(
+    () => new Set([...Object.keys(ratings), ...finished]).size,
+    [ratings, finished],
+  );
   const { user, ready } = useSession();
   const [popup, setPopup] = useState(false);
   // Pick a fresh quote after hydration so each page load shows a different one.
   const [quote, setQuote] = useState(QUOTES[0]!);
   useEffect(() => setQuote(randomQuote()), []);
   const results = useMemo(
-    () => (stage === "results" ? recommend(answers, 10, ratings) : []),
-    [stage, answers, ratings],
+    () => (stage === "results" ? recommend(answers, 10, ratings, finished) : []),
+    [stage, answers, ratings, finished],
   );
   useEffect(() => {
     if (stage === "results" && ready && !user) {
@@ -76,7 +88,7 @@ function Index() {
       <header className="flex flex-wrap items-center justify-between gap-y-3">
         <span className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.2em] text-muted-foreground sm:tracking-[0.3em]">
           <img
-            src={logoAsset.url}
+            src="/logo.svg"
             alt="A Classic Match"
             className="size-7"
             loading="eager"
@@ -107,6 +119,12 @@ function Index() {
             className="flex items-center gap-1.5 text-[0.7rem] uppercase tracking-widest text-muted-foreground hover:text-accent sm:text-xs"
           >
             <Library className="size-4" /> List
+          </Link>
+          <Link
+            to="/about"
+            className="text-[0.7rem] uppercase tracking-widest text-muted-foreground hover:text-accent sm:text-xs"
+          >
+            About
           </Link>
           <AccountNav />
         </nav>
@@ -193,6 +211,12 @@ function Index() {
           <p className="mt-2 text-sm text-muted-foreground">
             Tap the heart to save a book — your list keeps a link to buy it.
           </p>
+          {skipped > 0 && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              We left out the {skipped} {skipped === 1 ? "classic" : "classics"} you&rsquo;ve
+              already read, and leaned towards books like the ones you rated highly.
+            </p>
+          )}
           {ready && !user && (
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-accent bg-card p-4">
               <p className="font-serif text-lg text-foreground">Keep these matches on any device.</p>

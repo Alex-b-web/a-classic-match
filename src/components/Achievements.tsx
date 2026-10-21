@@ -26,10 +26,22 @@ export function Achievements() {
   const thisYear = finished.filter((f) => f.finishedOn.startsWith(year)).length;
   const pct = Math.min(100, Math.round((thisYear / goal) * 100));
 
+  // Distinct centuries the reader has finished a classic from (BC years count separately).
+  const centuries = new Set(
+    finished.map(({ book }) =>
+      book.year < 0 ? `bc${Math.ceil(Math.abs(book.year) / 100)}` : String(Math.ceil(book.year / 100)),
+    ),
+  ).size;
+
   const extra = [
     { ok: streak >= 7, name: "Week Streak", text: "Read 7 days in a row" },
     { ok: streak >= 30, name: "Month Streak", text: "Read 30 days in a row" },
     { ok: totalPages >= 1000, name: "1,000 Pages", text: "Read 1,000 pages in total" },
+    {
+      ok: centuries >= 4,
+      name: "Across the Centuries",
+      text: `Finished classics from 4 different centuries (${Math.min(centuries, 4)} of 4)`,
+    },
   ];
 
   return (

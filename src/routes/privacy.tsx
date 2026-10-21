@@ -14,7 +14,7 @@ export const Route = createFileRoute("/privacy")({
       </p>
       <h2>What we collect</h2>
       <ul>
-        <li>Account details: your email address (and name, if you sign in with Google or Apple).</li>
+        <li>Account details: your email address (and name, if you sign in with Google).</li>
         <li>Reading data: saved books, quiz answers, reading plan, pages logged, ratings, reviews and reading goal.</li>
         <li>Technical data needed to keep you signed in securely.</li>
       </ul>
@@ -41,7 +41,10 @@ export const Route = createFileRoute("/privacy")({
         You may also complain to the Information Commissioner’s Office (ico.org.uk).
       </p>
       <h2>Contact</h2>
-      <p className="italic text-muted-foreground">Contact details will be added soon.</p>
+      <p>
+        For any question about your data, or to use any of your rights, email{" "}
+        <a href="mailto:hello@aclassicmatch.com" className="underline">hello@aclassicmatch.com</a>.
+      </p>
     </InfoPage>
   ),
 });
