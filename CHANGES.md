@@ -1,5 +1,14 @@
 # Changes — October 2026
 
+## Firebase only (current)
+
+- **Everything runs on Firebase.** Hosting, sign-in, Firestore (London) and the functions. Supabase and Lovable code, packages and folders were removed.
+- **Sign-in is by email link only.** The page asks for an email, the server function `send_sign_in_link` sends the link from `hello@aclassicmatch.com` through Resend, and opening the link signs the reader in. No passwords, no Apple, no Google.
+- **Saved data** is kept in Firestore, one document per reader (`users/{uid}`), readable and writable only by that reader (`firestore.rules`).
+- **Functions** (Python, `functions/`): `send_sign_in_link`, `send_welcome_email` (once per account), `delete_account` (erases the reader's data and sign-in record), and `streak_reminders` (hourly).
+- **Publishing** is automatic: the tests run, then the Deploy workflow publishes the site, rules and functions on every merge into `main`.
+- **Browser tests** use fake Firebase settings and a local stand-in, so no real accounts or emails are touched.
+
 ## Firebase Hosting option (18 October)
 
 The same site can now also be published on **Firebase Hosting** instead of Hostinger. Supabase, Resend and the emails are unchanged. See `FIREBASE-SETUP.md`. Added: `firebase.json`, `.firebaserc`, `.github/workflows/firebase-hosting.yml` (auto-publish from GitHub) and the `npm run deploy:firebase` command.

@@ -1,32 +1,23 @@
 import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { onAuthStateChanged, type User } from "firebase/auth";
+import { getFirebase } from "@/integrations/firebase/client";
 
 export function useSession() {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // If the site's Supabase settings are missing, carry on signed out instead of crashing:
+    // If the site's Firebase settings are missing, carry on signed out instead of crashing:
     // the quiz, list and record still work in this browser.
-    try {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user ?? null);
-        setReady(true);
-      });
-      void supabase.auth
-        .getSession()
-        .then(({ data: s }) => {
-          setUser(s.session?.user ?? null);
-          setReady(true);
-        })
-        .catch(() => setReady(true));
-      return () => data.subscription.unsubscribe();
-    } catch (e) {
-      console.error(e);
+    const fb = getFirebase();
+    if (!fb) {
       setReady(true);
       return undefined;
     }
+    return onAuthStateChanged(fb.auth, (current) => {
+      setUser(current);
+      setReady(true);
+    });
   }, []);
 
   return { user, ready };

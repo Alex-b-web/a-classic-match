@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { signOut } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 import { InfoPage, meta } from "@/components/InfoPage";
 import { useSession } from "@/hooks/use-session";
-import { supabase } from "@/integrations/supabase/client";
+import { getFirebase } from "@/integrations/firebase/client";
 import { ReminderSettings } from "@/components/ReminderSettings";
 
 const LOCAL_KEYS = [
@@ -30,6 +32,29 @@ function AccountPage() {
 
   const clearLocal = () => LOCAL_KEYS.forEach((k) => localStorage.removeItem(k));
 
+  const logOut = async () => {
+    const fb = getFirebase();
+    if (fb) await signOut(fb.auth);
+    navigate({ to: "/", replace: true });
+  };
+
+  const deleteAccount = async () => {
+    const fb = getFirebase();
+    setBusy(true);
+    setError(null);
+    try {
+      if (!fb) throw new Error("Firebase is not set up");
+      // The server erases the reader's saved data and their sign-in record.
+      await httpsCallable(fb.functions, "delete_account")();
+      clearLocal();
+      await signOut(fb.auth);
+      navigate({ to: "/", replace: true });
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setBusy(false);
+    }
+  };
+
   if (!ready) return <InfoPage title="Your account">{null}</InfoPage>;
   if (!user)
     return (
@@ -50,10 +75,7 @@ function AccountPage() {
         Signed in as <strong>{user.email}</strong>
       </p>
       <button
-        onClick={async () => {
-          await supabase.auth.signOut();
-          navigate({ to: "/", replace: true });
-        }}
+        onClick={logOut}
         className="rounded-full border border-border px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
       >
         Sign out
@@ -78,23 +100,7 @@ function AccountPage() {
         <div className="flex flex-wrap gap-2">
           <button
             disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              setError(null);
-              try {
-                // Runs the "delete-account" Supabase function, which erases the account and its data.
-                const { error: fnError } = await supabase.functions.invoke("delete-account", {
-                  method: "POST",
-                });
-                if (fnError) throw fnError;
-                clearLocal();
-                await supabase.auth.signOut();
-                navigate({ to: "/", replace: true });
-              } catch {
-                setError("Something went wrong. Please try again.");
-                setBusy(false);
-              }
-            }}
+            onClick={deleteAccount}
             className="rounded-full bg-destructive px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-destructive-foreground disabled:opacity-60"
           >
             {busy ? "Deleting…" : "Yes, delete everything"}

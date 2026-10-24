@@ -1,113 +1,60 @@
-# A Classic Match on Firebase Hosting
+# A Classic Match: how the site runs and what needs doing
 
-Firebase only replaces **Hostinger**, as the place the website files live. Everything else stays the same:
+The whole site now runs on Google Firebase. Nothing depends on Lovable or Supabase any more.
 
-- **Supabase** still handles accounts, sign-in links and saved data.
-- **Resend** still sends the emails.
-- **Outlook** still receives the replies.
-
-**First, do steps 1–6 of `HOSTINGER-SETUP.md`** (Supabase, Resend, the email templates, the three functions and the hourly reminders). Then follow the steps below instead of step 7 there.
-
-The main difference from Hostinger: Firebase has no file manager, so you can't edit files on the server. You change files on your computer (or in GitHub) and **publish** again. Each publish takes about a minute.
-
----
-
-## 1. Get the code ready on a computer (10 min)
-
-1. Install **Node.js LTS** from nodejs.org.
-2. Unzip `a-classic-match-hostinger-source.zip`, or clone your GitHub repository, and open a terminal in that folder.
-3. Open **`public/config.js`** and fill in your Supabase details (from step 1 of the Hostinger guide):
-   ```js
-   window.ACM_CONFIG = {
-     supabaseUrl: "https://abcdefgh.supabase.co",
-     supabaseKey: "sb_publishable_…",
-     signInWith: [],
-   };
-   ```
-4. Run `npm install` once.
-
-## 2. Create the Firebase project (5 min)
-
-1. Go to **console.firebase.google.com** → **Create a project**. Name it `a-classic-match`. Google Analytics isn't needed.
-2. The free **Spark** plan is enough for hosting.
-3. Note the **Project ID** (Project settings → General). Put it in **`.firebaserc`** in place of `YOUR-FIREBASE-PROJECT-ID`.
-
-## 3. Publish (5 min)
-
-In the project folder:
-
-```bash
-npx firebase-tools@14 login        # opens a browser to sign in with your Google account
-npm run deploy:firebase            # builds the site and publishes it
-```
-
-The site is now live at `https://YOUR-PROJECT-ID.web.app`. Add that address to Supabase → **Authentication → URL Configuration → Redirect URLs** as `https://YOUR-PROJECT-ID.web.app/**`, so you can test sign-in there before moving the domain.
-
-Whenever you change anything, including `config.js`, run `npm run deploy:firebase` again. Firebase keeps every earlier version: **Hosting → Release history → Roll back** undoes a bad publish in one click.
-
-## 4. Point aclassicmatch.com at Firebase (15 min, then wait for SSL)
-
-1. Firebase console → **Hosting → Add custom domain** → `www.aclassicmatch.com`. Then add `aclassicmatch.com` and choose **Redirect to www.aclassicmatch.com**.
-2. Firebase shows a **TXT** record (to prove you own the domain) and **A** records. Add them where your DNS is managed (GoDaddy → Domain → DNS, or Hostinger if the nameservers point there):
-   - Replace only the existing **A** / **CNAME** records for `@` and `www`. Those are the ones currently pointing at Hostinger.
-   - **Do not touch** the **MX**, **autodiscover**, Microsoft **SPF** or **Resend** records, or `hello@` and the emails will stop working.
-3. Wait for Firebase to show **Connected**. The free SSL certificate is added automatically, usually within an hour and sometimes up to 24 hours.
-4. Once the site works at `https://www.aclassicmatch.com`, you can cancel the Hostinger hosting plan. Don't cancel the domain if it's registered with GoDaddy.
-
-## 5. Connect GitHub so every push publishes (15 min, one time)
-
-After this, pushing to the `main` branch on GitHub publishes the website and the Firestore rules automatically. You can also run it by hand from **GitHub → Actions → Deploy to Firebase → Run workflow**.
-
-**Before you start:** the project folder must be a GitHub repository (for example `a-classic-match`), and the code must be on the `main` branch.
-
-**A. Connect the repository (Firebase does the work)**
-
-1. In the project folder, run:
-   ```bash
-   npx firebase-tools@14 login
-   npx firebase-tools@14 init hosting:github
-   ```
-2. Sign in to GitHub when asked. Choose your repository and the `main` branch.
-3. Answer the questions:
-   - **Project:** pick `a-classic-match` (the Firebase project from section 2).
-   - **Public directory:** `dist/client` (it may already be filled in).
-   - **Single-page app:** No.
-   - **Automatic builds and deploys with GitHub:** Yes.
-4. Firebase creates a service account, adds its key to your GitHub repository as the secret **`FIREBASE_SERVICE_ACCOUNT`**, and may add a new workflow file. Keep the workflow file that is already in the project (`.github/workflows/firebase-hosting.yml`). If Firebase adds a second file, delete that one so there is only one pipeline.
-
-**B. Allow the service account to deploy the Firestore rules (5 min)**
-
-The first time, the service account may only be allowed to publish the website. To publish the Firestore rules too:
-
-1. Google Cloud console (console.cloud.google.com) → choose the project → **IAM & Admin → IAM**.
-2. Find the service account whose name ends in `@…iam.gserviceaccount.com` (it was created by step A).
-3. Click the pencil icon → **Add another role** → **Firebase Rules Admin** → **Save**.
-
-**C. Check the first run**
-
-1. Commit and push your changes to `main` (or run the workflow by hand).
-2. Open the **Actions** tab on GitHub. The run should turn green within about 2 minutes.
-3. If it turns red, open the run and read the message at the failed step. A missing secret or a wrong project ID are the usual causes.
-
-**D. Make the Firestore database (one time)**
-
-1. Firebase console → **Build → Firestore Database → Create database**.
-2. Choose **Production mode** and the **London (europe-west2)** location. Once created, the location can't be changed.
-3. The rules in `firestore.rules` are published by the pipeline. They lock everything until the app is connected to Firestore.
-
-Whenever you change anything, including `config.js`, push again and the site updates. Firebase keeps every earlier version: **Hosting → Release history → Roll back** undoes a bad publish in one click.
+| Part               | What it does                                                                      | Where it lives                                                              |
+| ------------------ | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Website            | Pages, book logo, quiz                                                            | Firebase Hosting (`aclassicmatch.web.app`, then `www.aclassicmatch.com`)    |
+| Sign-in            | One-tap email link, no passwords                                                  | Firebase Authentication                                                     |
+| Saved reading data | Each reader's list, page log, ratings and reminder settings                       | Firestore database, London (`europe-west2`)                                 |
+| Emails             | Sign-in link, welcome email, streak reminders, all from `hello@aclassicmatch.com` | Resend, sent by Python functions running on Firebase (`functions/`, London) |
+| Publishing         | Runs the tests, then publishes the site, database rules and functions             | GitHub Actions (`.github/workflows/deploy.yml`), on every merge into `main` |
+| Domain and inbox   | Where `aclassicmatch.com` points, and Outlook for `hello@`                        | Your domain DNS (GoDaddy or Hostinger). See `HOSTINGER-SETUP.md`            |
 
 ---
 
-### What's in the code for Firebase
+## What you need to do
 
-| File                                     | What it does                                                                                                                                                                                                                      |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `firebase.json`                          | Publishes the `dist/client` folder and builds it first. It gives clean addresses (`/about`), shows `404.html` for unknown pages, makes pages and `config.js` always load fresh, and lets browsers cache the app files for a year. |
-| `.firebaserc`                            | Which Firebase project to publish to.                                                                                                                                                                                             |
-| `.github/workflows/firebase-hosting.yml` | Automatic deploy of the website and Firestore rules on every push to `main`.                                                                                                                                                      |
-| `firestore.rules`                        | Who may read and write the Firestore database. Currently everything is locked.                                                                                                                                                    |
-| `firestore.indexes.json`                 | Search indexes for Firestore (none yet).                                                                                                                                                                                          |
-| `package.json` → `deploy:firebase`       | The one command for publishing by hand.                                                                                                                                                                                           |
+These are the only steps that need a person. Everything else is automatic.
 
-`public/.htaccess` is only used by Hostinger. Firebase ignores it, and it's left in so the same code still works on either host.
+1. **Fill in the Firebase web settings.** Firebase console → **Project settings → General → Your apps** → the Web app → **SDK setup and configuration**. Copy the `apiKey` and `appId` values into `public/config.js` (the values are public and safe to share). Until this is done, the site works but sign-in shows a "not set up" message.
+2. **Switch on email-link sign-in.** Firebase console → **Authentication → Sign-in method → Email/Password** → switch on **Email link (passwordless sign-in)** → **Save**.
+3. **Allow the website's address for sign-in.** Firebase console → **Authentication → Settings → Authorized domains** → **Add domain**: `aclassicmatch.com` and `www.aclassicmatch.com`. Without this, the link in the email won't bring people back to the site.
+4. **Point the domain at Firebase.** In your DNS (GoDaddy, or Hostinger if the nameservers point there):
+   - `www` should be a **CNAME** to `aclassicmatch.web.app`.
+   - Add the **A** records and the **TXT** record that Firebase shows under **Hosting → Custom domains** for `aclassicmatch.com`.
+   - Wait until Firebase shows **Connected**. The free SSL certificate follows automatically.
+   - Do **not** change the **MX**, **autodiscover**, Outlook **SPF**, or the Resend records. Those keep `hello@` and the emails working.
+5. **Protect the main branch on GitHub.** GitHub → repository **Settings → Rules → Rulesets → "Protect main"** → set to **Active** and save. This stops anything reaching the live site without passing the tests.
+
+---
+
+## How a change goes live
+
+1. Make the change on a branch and open a **pull request** into `main`.
+2. The **Tests** run: secret scan, lint, type check, build, browser tests, and the Python function tests. Any failure blocks the merge.
+3. When you merge, the **Deploy** workflow runs the tests again, then publishes the website, the Firestore rules and the functions.
+4. Check the **Actions** tab. A green run means it is live at `https://aclassicmatch.web.app`.
+
+If a run turns red, open it and read the message at the failed step. Firebase keeps every earlier website version: **Hosting → Release history → Roll back** undoes a bad publish in one click.
+
+---
+
+## Where things are in the code
+
+| File                                          | What it does                                                                                                         |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `public/config.js`                            | Firebase web settings (`apiKey`, `appId`). Public values only.                                                       |
+| `src/integrations/firebase/client.ts`         | Connects the website to Firebase.                                                                                    |
+| `src/routes/auth.tsx`                         | The sign-in page: sends the link, then finishes sign-in when the link is opened.                                     |
+| `src/lib/sync.ts`                             | Saves each signed-in reader's data to `users/{uid}` in Firestore.                                                    |
+| `functions/main.py`                           | Server functions: `send_sign_in_link`, `send_welcome_email`, `delete_account`, `streak_reminders`.                   |
+| `functions/emails.py`, `functions/templates/` | The email designs (sign-in, welcome, reminder) and the code that sends them through Resend.                          |
+| `functions/books.py`, `functions/streaks.py`  | The book page counts and the streak rules used by the reminders.                                                     |
+| `firestore.rules`                             | Each reader can read and write only their own document. Everything else is locked.                                   |
+| `firebase.json`                               | What Firebase publishes, the clean web addresses, and the function settings.                                         |
+| `.github/workflows/ci.yml`                    | The tests (run on every pull request and before every deploy).                                                       |
+| `.github/workflows/deploy.yml`                | Publishes everything to Firebase after the tests pass.                                                               |
+| `functions/.env`                              | Non-secret function settings (the site address and the sender). The Resend key is a GitHub secret, not in this file. |
+
+**Secrets.** The only secrets are the `FIREBASE_SERVICE_ACCOUNT` and `RESEND_API_KEY` values stored in GitHub (**Settings → Secrets and variables → Actions**). They are never written into the code. See `SECURITY.md`.

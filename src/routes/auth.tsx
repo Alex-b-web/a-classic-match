@@ -1,20 +1,35 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@/hooks/use-session";
+import { httpsCallable } from "firebase/functions";
+import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { getFirebase } from "@/integrations/firebase/client";
 
-/** Turns low-level errors (Safari says "Load failed", Chrome "Failed to fetch") into plain words. */
-function friendly(message: string): string {
-  if (/load failed|failed to fetch|networkerror|fetch/i.test(message))
-    return "We couldn't reach the sign-in service. Please check your connection and try again. (Site owner: check the Supabase address in config.js.)";
-  if (/redirect/i.test(message))
-    return "This web address isn't allowed to sign in yet. (Site owner: add it under Supabase → Authentication → URL Configuration.)";
-  if (/missing supabase/i.test(message))
-    return "Sign-in isn't set up on this site yet. (Site owner: fill in config.js with your Supabase details.)";
-  if (/rate limit|too many/i.test(message))
+/** Remembers the address the link was sent to, so the link can finish on this device. */
+const EMAIL_KEY = "acm-signin-email";
+
+const NOT_SET_UP =
+  "Sign-in isn't set up on this site yet. (Site owner: fill in the firebase section of public/config.js.)";
+
+/** Turns Firebase error codes into plain words. */
+function friendly(e: unknown): string {
+  const code = String((e as { code?: unknown } | null)?.code ?? "");
+  if (code === "functions/invalid-argument") return "Please enter a valid email address.";
+  if (code === "auth/invalid-email")
+    return "That address doesn't match the one the sign-in link was sent to. Please enter it again.";
+  if (code === "functions/resource-exhausted" || code === "auth/too-many-requests")
     return "Too many sign-in emails were requested. Please wait a few minutes and try again.";
-  return message;
+  if (code === "auth/invalid-action-code" || code === "auth/expired-action-code")
+    return "This sign-in link has expired or has already been used. Please request a new one.";
+  if (code === "auth/user-disabled")
+    return "This account can't be used. Please contact hello@aclassicmatch.com.";
+  if (
+    code === "auth/network-request-failed" ||
+    code === "functions/unavailable" ||
+    code === "functions/deadline-exceeded"
+  )
+    return "We couldn't reach the sign-in service. Please check your connection and try again.";
+  return "Something went wrong. Please try again in a minute.";
 }
 
 export const Route = createFileRoute("/auth")({
@@ -42,64 +57,78 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { user, ready } = useSession();
-  const [mode, setMode] = useState<"signin" | "signup">(Route.useSearch().mode ?? "signin");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Default to a one-tap email link; a password stays available for readers who prefer it.
-  const [usePassword, setUsePassword] = useState(false);
   const [linkSent, setLinkSent] = useState(false);
-  // The Google button appears only once it is switched on in config.js (signInWith),
-  // so readers never land on an error page for a provider that isn't set up yet.
-  const [providers, setProviders] = useState<Array<"google">>([]);
-  useEffect(() => {
-    const list = (window as unknown as { ACM_CONFIG?: { signInWith?: string[] } }).ACM_CONFIG
-      ?.signInWith;
-    if (Array.isArray(list)) setProviders((["google"] as const).filter((p) => list.includes(p)));
-  }, []);
+  // Opened from a sign-in link on a device that doesn't remember the address: ask for it.
+  const [needsEmail, setNeedsEmail] = useState(false);
 
-  const sendLink = async () => {
+  const finish = async (address: string) => {
+    const fb = getFirebase();
+    if (!fb) {
+      setError(NOT_SET_UP);
+      return;
+    }
     setBusy(true);
     setError(null);
-    setNotice(null);
     try {
-      const { error: err } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: window.location.origin, shouldCreateUser: true },
-      });
-      if (err) setError(friendly(err.message));
-      else setLinkSent(true);
+      await signInWithEmailLink(fb.auth, address, window.location.href);
+      try {
+        localStorage.removeItem(EMAIL_KEY);
+      } catch {
+        /* storage unavailable */
+      }
+      navigate({ to: "/", replace: true });
     } catch (e) {
-      setError(friendly(e instanceof Error ? e.message : String(e)));
+      setError(friendly(e));
+      setBusy(false);
     }
-    setBusy(false);
   };
+
+  // Arriving from a sign-in link: finish signing in with the address saved on this device.
+  useEffect(() => {
+    const fb = getFirebase();
+    if (!fb || !isSignInWithEmailLink(fb.auth, window.location.href)) return;
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem(EMAIL_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+    if (saved) void finish(saved);
+    else setNeedsEmail(true);
+    // Runs once, when the page is first opened from the link.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!usePassword) return sendLink();
+    const address = email.trim().toLowerCase();
+    if (needsEmail) return finish(address);
+
+    const fb = getFirebase();
+    if (!fb) {
+      setError(NOT_SET_UP);
+      return;
+    }
     setBusy(true);
     setError(null);
-    setNotice(null);
     try {
-      if (mode === "signup") {
-        const { data, error: err } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (err) setError(friendly(err.message));
-        else if (!data.session)
-          setNotice("Check your email and open the link we sent to finish creating your account.");
-      } else {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-        if (err) setError(friendly(err.message));
+      // Emails the one-tap link from hello@aclassicmatch.com. Creates the account on first use.
+      const sendSignInLink = httpsCallable<{ email: string }, { ok: boolean }>(
+        fb.functions,
+        "send_sign_in_link",
+      );
+      await sendSignInLink({ email: address });
+      try {
+        localStorage.setItem(EMAIL_KEY, address);
+      } catch {
+        /* storage unavailable */
       }
-    } catch (e) {
-      setError(friendly(e instanceof Error ? e.message : String(e)));
+      setLinkSent(true);
+    } catch (err) {
+      setError(friendly(err));
     }
     setBusy(false);
   };
@@ -142,50 +171,15 @@ function AuthPage() {
       ) : (
         <>
           <h1 className="mt-8 font-serif text-3xl text-foreground">
-            {usePassword
-              ? mode === "signin"
-                ? "Welcome back"
-                : "Create your account"
-              : "Sign in or create an account"}
+            {needsEmail ? "Confirm your email" : "Sign in or create an account"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your saved books, reading plan and page log are kept with your account, so they follow
-            you to any device.
+            {needsEmail
+              ? "To finish signing in, enter the address the sign-in link was sent to."
+              : "Your saved books, reading plan and page log are kept with your account, so they follow you to any device."}
           </p>
 
-          <div className="mt-6 space-y-2">
-            {providers.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={async () => {
-                  setError(null);
-                  // Hands over to Google, then comes back to the site signed in.
-                  let err: unknown = null;
-                  try {
-                    ({ error: err } = await supabase.auth.signInWithOAuth({
-                      provider: p,
-                      options: { redirectTo: window.location.origin },
-                    }));
-                  } catch (e) {
-                    err = e;
-                  }
-                  if (err)
-                    setError("Google sign-in isn't switched on yet. Please use email for now.");
-                }}
-                className="w-full rounded-full border border-border bg-card px-5 py-3 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
-              >
-                Continue with Google
-              </button>
-            ))}
-            {providers.length > 0 && (
-              <p className="pt-2 text-center text-xs uppercase tracking-widest text-muted-foreground">
-                or use email
-              </p>
-            )}
-          </div>
-
-          <form onSubmit={submit} className="mt-3 space-y-3">
+          <form onSubmit={submit} className="mt-6 space-y-3">
             <label className="block">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">Email</span>
               <input
@@ -197,73 +191,23 @@ function AuthPage() {
                 className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2.5 text-base text-foreground outline-none focus:border-accent"
               />
             </label>
-            {usePassword && (
-              <label className="block">
-                <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                  Password
-                </span>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2.5 text-base text-foreground outline-none focus:border-accent"
-                />
-              </label>
-            )}
 
             {error && <p className="text-sm text-destructive">{error}</p>}
-            {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
 
             <button
               type="submit"
               disabled={busy}
               className="w-full rounded-full bg-accent px-5 py-3 text-xs uppercase tracking-[0.2em] text-accent-foreground disabled:opacity-60"
             >
-              {busy
-                ? "One moment…"
-                : !usePassword
-                  ? "Email me a sign-in link"
-                  : mode === "signin"
-                    ? "Sign in"
-                    : "Create account"}
+              {busy ? "One moment…" : needsEmail ? "Finish signing in" : "Email me a sign-in link"}
             </button>
-            {!usePassword && (
+            {!needsEmail && (
               <p className="text-center text-xs text-muted-foreground">
                 No password needed. We&rsquo;ll email you a link that signs you in, new or
                 returning.
               </p>
             )}
           </form>
-
-          <button
-            type="button"
-            onClick={() => {
-              setUsePassword(!usePassword);
-              setError(null);
-              setNotice(null);
-            }}
-            className="mt-4 block text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
-          >
-            {usePassword ? "Email me a link instead" : "Use a password instead"}
-          </button>
-
-          {usePassword && (
-            <button
-              onClick={() => {
-                setMode(mode === "signin" ? "signup" : "signin");
-                setError(null);
-                setNotice(null);
-              }}
-              className="mt-6 text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
-            >
-              {mode === "signin"
-                ? "New here? Create an account"
-                : "Already have an account? Sign in"}
-            </button>
-          )}
         </>
       )}
     </main>
