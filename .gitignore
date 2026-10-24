@@ -67,3 +67,6 @@ coverage/
 
 # ---- OS and editor ----
 Thumbs.db
+
+# Non-secret function settings are allowed here
+!functions/.env
