@@ -96,6 +96,10 @@ jobs:
           rm -f "$RUNNER_TEMP/resend-key.txt"
 
       - name: Deploy website, Firestore rules and functions
+        env:
+          # Settings the functions read at deploy time (not secret, so they live here).
+          SITE_URL: https://www.aclassicmatch.com
+          REMINDER_FROM: "A Classic Match <hello@aclassicmatch.com>"
         run: npx firebase-tools@14 deploy --only hosting,firestore:rules,functions --project "$FIREBASE_PROJECT" --non-interactive
 
       - name: Check the live site answers
