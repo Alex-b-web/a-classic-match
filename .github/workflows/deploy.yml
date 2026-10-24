@@ -100,7 +100,7 @@ jobs:
           # Settings the functions read at deploy time (not secret, so they live here).
           SITE_URL: https://www.aclassicmatch.com
           REMINDER_FROM: "A Classic Match <hello@aclassicmatch.com>"
-        run: npx firebase-tools@14 deploy --only hosting,firestore:rules,functions --project "$FIREBASE_PROJECT" --non-interactive
+        run: npx firebase-tools@14 deploy --only hosting,firestore:rules,functions --project "$FIREBASE_PROJECT" --non-interactive --force
 
       - name: Check the live site answers
         run: |
