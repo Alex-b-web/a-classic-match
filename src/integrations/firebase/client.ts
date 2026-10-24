@@ -2,7 +2,7 @@
 // Settings come from public/config.js (window.ACM_CONFIG.firebase). They are public values, safe to
 // be seen by anyone; what protects the data is the Firestore rules and the server functions.
 import { initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import { browserLocalPersistence, getAuth, setPersistence, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getFunctions, type Functions } from "firebase/functions";
 
@@ -57,9 +57,14 @@ export function getFirebase(): FirebaseServices | null {
   }
   try {
     const app = initializeApp(settings);
+    const auth = getAuth(app);
+    // Keep readers signed in on this device until they press Sign out.
+    setPersistence(auth, browserLocalPersistence).catch((e) =>
+      console.error("Could not keep sign-in", e),
+    );
     cached = {
       app,
-      auth: getAuth(app),
+      auth,
       db: getFirestore(app),
       functions: getFunctions(app, FUNCTIONS_REGION),
     };
