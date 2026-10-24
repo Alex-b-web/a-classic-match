@@ -11,9 +11,9 @@
  */
 window.ACM_CONFIG = {
   firebase: {
-    apiKey: "YOUR-WEB-API-KEY",
+    apiKey: "AIzaSyBAamRcGmq46ieARfpMielrC_kz7_V4C3g",
     authDomain: "aclassicmatch.firebaseapp.com",
     projectId: "aclassicmatch",
-    appId: "YOUR-WEB-APP-ID",
+    appId: "1:92432845453:web:d553b688705446227830c4",
   },
 };

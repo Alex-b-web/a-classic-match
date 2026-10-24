@@ -1,0 +1,15 @@
+# Secret scanning settings (used by the "Check for leaked secrets" job in CI).
+# Gitleaks' default rules still apply to every file.
+
+[extend]
+useDefault = true
+
+# Firebase web API keys (AIza…) are public by design: they identify the app and
+# are protected by Firestore rules and server checks, not by secrecy. Allow one
+# only in public/config.js, where those public values are kept. Any other AIza…
+# key anywhere in the repository is still reported.
+[[allowlists]]
+description = "Firebase web API key in public/config.js (public by design)"
+condition = "AND"
+paths = ['''^public/config\.js$''']
+regexes = ['''AIza[0-9A-Za-z_\-]{35}''']
