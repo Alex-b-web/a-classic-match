@@ -8,30 +8,33 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { httpsCallable } from "firebase/functions";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useSession } from "../hooks/use-session";
 import { startSync } from "../lib/sync";
-import { supabase } from "../integrations/supabase/client";
+import { getFirebase } from "../integrations/firebase/client";
 import { CookieNotice, SiteFooter } from "../components/SiteFooter";
 
 /** Keeps the signed-in reader's saved books, plan and page log in their account. */
 function CloudSync() {
   const { user } = useSession();
-  const userId = user?.id;
+  const userId = user?.uid;
 
   useEffect(() => {
-    if (!userId) return;
+    const fb = getFirebase();
+    if (!userId || !fb) return;
     let stop: (() => void) | undefined;
     let cancelled = false;
-    void startSync(userId).then((cleanup) => {
-      if (cancelled) cleanup();
-      else stop = cleanup;
-    });
+    startSync(userId)
+      .then((cleanup) => {
+        if (cancelled) cleanup();
+        else stop = cleanup;
+      })
+      .catch((e) => console.error("Could not sync your account", e));
 
-    // Ask for the welcome email once per account on this browser. The "welcome-email" Supabase
-    // function also remembers who it has welcomed, so a new device never sends a second one.
+    // Ask for the welcome email once per account on this browser. The server also remembers
+    // who it has welcomed, so a new device never sends a second one.
     const welcomedKey = `acm-welcomed-${userId}`;
     let welcomed = false;
     try {
@@ -40,15 +43,15 @@ function CloudSync() {
       /* storage unavailable */
     }
     if (!welcomed) {
-      void supabase.functions.invoke("welcome-email", { method: "POST" }).then(({ error }) => {
-        if (!error) {
+      httpsCallable(fb.functions, "send_welcome_email")()
+        .then(() => {
           try {
             localStorage.setItem(welcomedKey, "1");
           } catch {
             /* storage unavailable */
           }
-        }
-      });
+        })
+        .catch((e) => console.error("Welcome email not sent", e));
     }
     return () => {
       cancelled = true;
@@ -84,9 +87,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -148,7 +148,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
-    // Site settings (Supabase address and public key). Loaded before the app so sign-in works.
+    // Site settings (Firebase connection details). Loaded before the app so sign-in works.
     scripts: [{ src: "/config.js" }],
   }),
 

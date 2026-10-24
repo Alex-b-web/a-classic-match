@@ -1,4 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+import { doc, getDoc, setDoc, type DocumentReference } from "firebase/firestore";
+import { getFirebase } from "@/integrations/firebase/client";
 
 /** localStorage keys that make up a reader's account data. */
 export const SHELF_KEY = "canon-shelf-v1";
@@ -97,13 +98,24 @@ function applyLocally(state: ReaderState) {
   window.dispatchEvent(new Event("acm-plan-change"));
 }
 
+/** The reader's document: users/{uid}. Only the reader can read or write it (see firestore.rules). */
+function readerDoc(userId: string): DocumentReference {
+  const fb = getFirebase();
+  if (!fb) throw new Error("Firebase is not set up");
+  return doc(fb.db, "users", userId);
+}
+
+/** Firestore rejects undefined values, so they are dropped before saving. */
+function clean(state: ReaderState): ReaderState {
+  return JSON.parse(JSON.stringify(state)) as ReaderState;
+}
+
 async function push(userId: string, state: ReaderState) {
-  await supabase
-    .from("reader_state")
-    .upsert(
-      { user_id: userId, data: state as never, updated_at: new Date().toISOString() },
-      { onConflict: "user_id" },
-    );
+  await setDoc(
+    readerDoc(userId),
+    { state: clean(state), updatedAt: new Date().toISOString() },
+    { merge: true },
+  );
 }
 
 /**
@@ -112,13 +124,8 @@ async function push(userId: string, state: ReaderState) {
  * Returns a cleanup function.
  */
 export async function startSync(userId: string): Promise<() => void> {
-  const { data } = await supabase
-    .from("reader_state")
-    .select("data")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  const remote = (data?.data ?? {}) as ReaderState;
+  const snap = await getDoc(readerDoc(userId));
+  const remote = ((snap.data()?.["state"] as ReaderState | undefined) ?? {}) as ReaderState;
   const merged = merge(remote, localState());
   applyLocally(merged);
   await push(userId, merged);
@@ -128,7 +135,7 @@ export async function startSync(userId: string): Promise<() => void> {
     const snapshot = JSON.stringify(localState());
     if (snapshot === last) return;
     last = snapshot;
-    void push(userId, localState());
+    push(userId, localState()).catch((e) => console.error("Could not save your changes", e));
   }, 2000);
 
   return () => window.clearInterval(timer);

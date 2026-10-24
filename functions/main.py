@@ -1,8 +1,9 @@
 """A Classic Match: Firebase Cloud Functions (Python).
 
-Three functions:
+Four functions:
   send_sign_in_link     callable: emails a one-tap sign-in link from hello@aclassicmatch.com
   send_welcome_email    callable: sends the welcome email once per account
+  delete_account        callable: erases the reader's saved data and sign-in record
   streak_reminders      scheduled hourly: streak reminders at each reader's chosen hour
 
 Data: Firestore collection "users", one document per reader (document id = Firebase uid).
@@ -92,6 +93,17 @@ def send_welcome_email(req: https_fn.CallableRequest):
         ref.set({"welcomeSent": False}, merge=True)  # allow a retry next time
         raise
     return {"sent": True}
+
+
+@https_fn.on_call(region=REGION, timeout_sec=60)
+def delete_account(req: https_fn.CallableRequest):
+    """Erases the reader's saved data and their sign-in record. Only the signed-in reader can call it."""
+    if req.auth is None:
+        raise https_fn.HttpsError(https_fn.FunctionsErrorCode.UNAUTHENTICATED, "Sign in first.")
+    uid = req.auth.uid
+    firestore.client().collection("users").document(uid).delete()
+    auth.delete_user(uid)
+    return {"ok": True}
 
 
 @scheduler_fn.on_schedule(schedule="0 * * * *", region=REGION, secrets=[RESEND_API_KEY], timeout_sec=540)
