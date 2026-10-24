@@ -79,7 +79,7 @@ function AuthPage() {
       } catch {
         /* storage unavailable */
       }
-      navigate({ to: "/", replace: true });
+      navigate({ to: "/list", replace: true });
     } catch (e) {
       setError(friendly(e));
       setBusy(false);
