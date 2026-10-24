@@ -198,7 +198,7 @@ function Index() {
             Ten classic books for you
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Tap the heart to save a book — your list keeps a link to buy it.
+            Tap “Add to list” to save a book. Each one has a Buy link.
           </p>
           {skipped > 0 && (
             <p className="mt-1 text-sm text-muted-foreground">

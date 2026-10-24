@@ -74,6 +74,12 @@ function AccountPage() {
       <p>
         Signed in as <strong>{user.email}</strong>
       </p>
+      <Link
+        to="/list"
+        className="mt-4 inline-block rounded-full border border-border px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
+      >
+        View my saved list
+      </Link>
       <button
         onClick={logOut}
         className="rounded-full border border-border px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
