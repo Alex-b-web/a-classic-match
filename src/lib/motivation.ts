@@ -27,4 +27,3 @@ export function paceLine(pagesThisWeek: number, dailyGoal: number): string {
     return `${pagesThisWeek} pages this week, ahead of ${dailyGoal} a day`;
   return `${pagesThisWeek} pages this week so far`;
 }
-

@@ -1,0 +1,98 @@
+# Tests. Runs on every pull request, on every branch except main, and again before each deploy.
+# Nothing reaches the live site unless these stages pass.
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secrets-scan:
+    name: Check for leaked secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  website:
+    name: "Website: lint, types, build, browser tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Known vulnerabilities (report only)
+        run: |
+          npm audit --omit=dev --audit-level=high || echo "::warning::npm audit found high-severity issues. See the log."
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build (pre-renders every page)
+        run: npm run build
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install browser test tools
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Browser tests on the built site
+        run: python tests/browser/test_static.py dist/client "$RUNNER_TEMP/screenshots"
+
+      - name: Keep screenshots from the run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-screenshots
+          path: ${{ runner.temp }}/screenshots
+          if-no-files-found: ignore
+          retention-days: 7
+
+  functions:
+    name: "Functions: lint and unit tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install lint tool
+        run: python -m pip install --quiet ruff
+
+      - name: Lint
+        run: ruff check functions
+
+      - name: Unit tests (email content and reminder logic)
+        working-directory: functions
+        run: python -m unittest discover -s tests -v

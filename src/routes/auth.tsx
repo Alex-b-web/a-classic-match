@@ -19,7 +19,7 @@ function friendly(message: string): string {
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): { mode?: "signup" } =>
-    s.mode === "signup" ? { mode: "signup" } : {},
+    s["mode"] === "signup" ? { mode: "signup" } : {},
   head: () => ({
     meta: [
       { title: "Sign In or Create an Account — A Classic Match" },
@@ -58,8 +58,7 @@ function AuthPage() {
   useEffect(() => {
     const list = (window as unknown as { ACM_CONFIG?: { signInWith?: string[] } }).ACM_CONFIG
       ?.signInWith;
-    if (Array.isArray(list))
-      setProviders((["google"] as const).filter((p) => list.includes(p)));
+    if (Array.isArray(list)) setProviders((["google"] as const).filter((p) => list.includes(p)));
   }, []);
 
   const sendLink = async () => {
@@ -172,9 +171,7 @@ function AuthPage() {
                     err = e;
                   }
                   if (err)
-                    setError(
-                      "Google sign-in isn't switched on yet. Please use email for now.",
-                    );
+                    setError("Google sign-in isn't switched on yet. Please use email for now.");
                 }}
                 className="w-full rounded-full border border-border bg-card px-5 py-3 text-xs uppercase tracking-[0.2em] text-foreground hover:bg-secondary"
               >

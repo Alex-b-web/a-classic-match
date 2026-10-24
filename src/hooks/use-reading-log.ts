@@ -78,8 +78,7 @@ export function useReadingLog() {
     write(next);
   }, []);
 
-  const totalFor = (bookId: string) =>
-    Object.values(log[bookId] ?? {}).reduce((n, p) => n + p, 0);
+  const totalFor = (bookId: string) => Object.values(log[bookId] ?? {}).reduce((n, p) => n + p, 0);
 
   const pagesOn = (bookId: string, date: string) => log[bookId]?.[date] ?? 0;
 

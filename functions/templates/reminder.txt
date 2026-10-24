@@ -1,0 +1,9 @@
+{{ lead_text }}
+
+Log tonight's pages: {{ site_url }}/reading
+
+Happy reading,
+Alex
+
+You get this email because streak reminders are on. Turn them off any time: {{ site_url }}/account
+Questions? Write to {{ contact }}

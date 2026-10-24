@@ -13,7 +13,6 @@ import { useSession } from "@/hooks/use-session";
 import { useReadingLog } from "@/hooks/use-reading-log";
 import { BOOKS } from "@/data/books";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -68,6 +67,7 @@ function Index() {
       const t = window.setTimeout(() => setPopup(true), 1200);
       return () => window.clearTimeout(t);
     }
+    return undefined;
   }, [stage, ready, user]);
 
   const pick = (qid: string, i: number) => {
@@ -82,18 +82,12 @@ function Index() {
     else setStage("results");
   };
 
-
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
       <header className="flex flex-wrap items-center justify-between gap-y-3">
         <span className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.2em] text-muted-foreground sm:tracking-[0.3em]">
-          <img
-            src="/logo.svg"
-            alt="A Classic Match"
-            className="size-7"
-            loading="eager"
-          />
-          A Classic Match
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />A Classic
+          Match
         </span>
         <nav className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-4">
           <Link
@@ -128,7 +122,6 @@ function Index() {
           </Link>
           <AccountNav />
         </nav>
-
       </header>
 
       {stage === "quote" && (
@@ -151,7 +144,6 @@ function Index() {
             {`${QUESTIONS.length} questions on taste, era and temperament. Ten classics chosen to fit.`}
           </p>
 
-
           <button
             onClick={() => setStage("quiz")}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90"
@@ -165,10 +157,7 @@ function Index() {
         <section className="pt-16">
           <div className="flex items-center gap-3">
             {QUESTIONS.map((q, i) => (
-              <span
-                key={q.id}
-                className={`h-px flex-1 ${i <= step ? "bg-accent" : "bg-border"}`}
-              />
+              <span key={q.id} className={`h-px flex-1 ${i <= step ? "bg-accent" : "bg-border"}`} />
             ))}
           </div>
           <p className="mt-6 font-serif text-xs uppercase tracking-[0.3em] text-muted-foreground">
@@ -219,7 +208,9 @@ function Index() {
           )}
           {ready && !user && (
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-accent bg-card p-4">
-              <p className="font-serif text-lg text-foreground">Keep these matches on any device.</p>
+              <p className="font-serif text-lg text-foreground">
+                Keep these matches on any device.
+              </p>
               <Link
                 to="/auth"
                 search={{ mode: "signup" }}
@@ -241,8 +232,8 @@ function Index() {
                   Save your matches
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Create a free account so your ten classics, list and reading streak are never lost.
-                  Anything already saved here moves into your account.
+                  Create a free account so your ten classics, list and reading streak are never
+                  lost. Anything already saved here moves into your account.
                 </p>
                 <Link
                   to="/auth"

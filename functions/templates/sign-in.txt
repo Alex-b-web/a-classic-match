@@ -1,0 +1,13 @@
+Your sign-in link
+
+Tap the link below to sign in. Your saved classics, reading plan and streak will be waiting for you.
+
+{{ link }}
+
+This link works once and expires in 1 hour. If you didn't ask to sign in, you can ignore this email. Nobody can get into your account without it.
+
+Happy reading,
+Alex
+
+Questions? Write to hello@aclassicmatch.com
+A Classic Match · aclassicmatch.com

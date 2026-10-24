@@ -29,14 +29,12 @@ function ListPage() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
       <header className="flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground">
-          <img
-            src="/logo.svg"
-            alt="A Classic Match"
-            className="size-7"
-            loading="eager"
-          />
-          A Classic Match
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground"
+        >
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />A Classic
+          Match
         </Link>
         <nav className="flex items-center gap-4">
           <Link
@@ -53,7 +51,6 @@ function ListPage() {
           </Link>
           <AccountNav />
         </nav>
-
       </header>
       <Link
         to="/"

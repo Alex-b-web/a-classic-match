@@ -98,10 +98,12 @@ function applyLocally(state: ReaderState) {
 }
 
 async function push(userId: string, state: ReaderState) {
-  await supabase.from("reader_state").upsert(
-    { user_id: userId, data: state as never, updated_at: new Date().toISOString() },
-    { onConflict: "user_id" },
-  );
+  await supabase
+    .from("reader_state")
+    .upsert(
+      { user_id: userId, data: state as never, updated_at: new Date().toISOString() },
+      { onConflict: "user_id" },
+    );
 }
 
 /**

@@ -98,7 +98,6 @@ export const QUESTIONS: Question[] = [
   },
 ];
 
-
 export const QUESTION_COUNT = QUESTIONS.length;
 
 export function libraryFor(): Book[] {
@@ -138,7 +137,6 @@ export function recommend(
     for (const t of b.tags) weight.set(t, (weight.get(t) ?? 0) + delta);
   }
 
-
   const scored = [...pool]
     .map((b, idx) => {
       let score = 0;
@@ -158,5 +156,3 @@ export function recommend(
     reasons: reasonsFor(x.b.tags, chosen),
   }));
 }
-
-

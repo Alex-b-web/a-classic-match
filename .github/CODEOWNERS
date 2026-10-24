@@ -1,0 +1,5 @@
+# Changes to deployment and security settings need the owner's review.
+*                         @Alex-b-web
+/.github/                 @Alex-b-web
+/firestore.rules          @Alex-b-web
+/functions/               @Alex-b-web

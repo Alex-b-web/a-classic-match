@@ -75,10 +75,7 @@ function PlanPage() {
     }
   }, [picked, pace, loaded]);
 
-  const matches: Match[] = useMemo(
-    () => (answers ? recommend(answers, 20) : []),
-    [answers],
-  );
+  const matches: Match[] = useMemo(() => (answers ? recommend(answers, 20) : []), [answers]);
 
   const plan = useMemo(() => {
     const chosen = matches.filter((m) => picked.includes(m.book.id));
@@ -106,8 +103,8 @@ function PlanPage() {
           to="/"
           className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />
-          A Classic Match
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />A Classic
+          Match
         </Link>
         <nav className="flex items-center gap-4">
           <Link

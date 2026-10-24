@@ -1,0 +1,5 @@
+# Lint rules for the Python functions: real errors and unused code, not style preferences.
+target-version = "py312"
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I"]

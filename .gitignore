@@ -30,3 +30,40 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ---- Secrets and keys: never commit these ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*serviceAccount*.json
+*service-account*.json
+*firebase-adminsdk*.json
+gcp-key.json
+resend-key.txt
+
+# ---- Firebase local files ----
+.firebase/
+firebase-debug.log*
+firestore-debug.log
+ui-debug.log
+database-debug.log
+.runtimeconfig.json
+
+# ---- Python ----
+venv/
+.venv/
+functions/venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# ---- Build output and archives ----
+.lovable/
+*.zip
+coverage/
+
+# ---- OS and editor ----
+Thumbs.db

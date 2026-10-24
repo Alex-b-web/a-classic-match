@@ -1,0 +1,101 @@
+# Deploys everything to Firebase: the website, Firestore rules and the Python functions.
+# Runs only after the Tests workflow passes on main. Also runnable by hand from the Actions tab.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Tests first
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to Firebase
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: production
+      url: https://aclassicmatch.web.app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Read the project ID from .firebaserc
+        run: |
+          PROJECT=$(node -p "require('./.firebaserc').projects.default")
+          if [ -z "$PROJECT" ] || [ "$PROJECT" = "YOUR-FIREBASE-PROJECT-ID" ]; then
+            echo "::error::Set the Firebase project ID in .firebaserc first."; exit 1
+          fi
+          echo "FIREBASE_PROJECT=$PROJECT" >> "$GITHUB_ENV"
+          echo "Deploying to project: $PROJECT"
+
+      - name: Write Google credentials
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SA" ]; then
+            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT is missing (GitHub → Settings → Secrets → Actions)."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/gcp-key.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/gcp-key.json" >> "$GITHUB_ENV"
+
+      - name: Turn on the Google services the functions need
+        # Idempotent. If the service account can't change settings, the step warns and the deploy still runs.
+        continue-on-error: true
+        run: |
+          gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet
+          gcloud services enable \
+            cloudfunctions.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
+            run.googleapis.com eventarc.googleapis.com cloudscheduler.googleapis.com \
+            secretmanager.googleapis.com firestore.googleapis.com \
+            --project "$FIREBASE_PROJECT"
+
+      - name: Store the Resend key as a function secret
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          if [ -z "$RESEND_API_KEY" ]; then
+            echo "::error::Secret RESEND_API_KEY is missing (GitHub → Settings → Secrets → Actions)."
+            exit 1
+          fi
+          printf '%s' "$RESEND_API_KEY" > "$RUNNER_TEMP/resend-key.txt"
+          npx firebase-tools@14 functions:secrets:set RESEND_API_KEY \
+            --data-file "$RUNNER_TEMP/resend-key.txt" --project "$FIREBASE_PROJECT" --non-interactive --force
+          rm -f "$RUNNER_TEMP/resend-key.txt"
+
+      - name: Deploy website, Firestore rules and functions
+        run: npx firebase-tools@14 deploy --only hosting,firestore:rules,functions --project "$FIREBASE_PROJECT" --non-interactive
+
+      - name: Check the live site answers
+        run: |
+          URL="https://${FIREBASE_PROJECT}.web.app"
+          curl -fsS --retry 5 --retry-delay 10 "$URL/" | grep -q "A Classic Match"
+          curl -fsS --retry 3 "$URL/logo.svg" -o /dev/null
+          echo "Live and answering: $URL"
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/gcp-key.json" "$RUNNER_TEMP/resend-key.txt"
