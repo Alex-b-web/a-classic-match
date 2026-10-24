@@ -1,11 +1,13 @@
 rules_version = '2';
 
 // A Classic Match: Firestore security rules.
-// The site does not read or write Firestore yet (accounts and saved data are still in Supabase),
-// so every path is locked. When Firestore is wired into the app, add a rule per collection here,
-// for example: allow read, write: if request.auth != null && request.auth.uid == userId;
+// Each reader can read and write only their own document, users/{their uid}.
+// Everything else is locked. Cloud Functions use the admin SDK, which skips these rules.
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

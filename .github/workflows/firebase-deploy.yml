@@ -30,6 +30,10 @@ jobs:
         with:
           node-version: 22
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
@@ -46,7 +50,7 @@ jobs:
 
       # firebase.json runs `npm run build` first, so the website is built here.
       - name: Deploy hosting and Firestore rules
-        run: npx firebase-tools@14 deploy --only hosting,firestore:rules --non-interactive
+        run: npx firebase-tools@14 deploy --only hosting,firestore:rules,functions --non-interactive
 
       - name: Remove credentials
         if: always()

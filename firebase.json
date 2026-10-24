@@ -77,5 +77,16 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "python312",
+    "ignore": [
+      "venv",
+      "tests",
+      "__pycache__",
+      "*.pyc",
+      ".gitignore"
+    ]
   }
 }
