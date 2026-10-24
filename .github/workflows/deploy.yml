@@ -44,7 +44,7 @@ jobs:
 
       - name: Read the project ID from .firebaserc
         run: |
-          PROJECT=$(node -p "require('./.firebaserc').projects.default")
+          PROJECT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('.firebaserc', 'utf8')).projects.default)")
           if [ -z "$PROJECT" ] || [ "$PROJECT" = "YOUR-FIREBASE-PROJECT-ID" ]; then
             echo "::error::Set the Firebase project ID in .firebaserc first."; exit 1
           fi
