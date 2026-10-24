@@ -6,7 +6,6 @@ import { libraryFor } from "@/data/quiz";
 import { BookCard } from "@/components/BookCard";
 import { useShelf } from "@/hooks/use-shelf";
 
-
 export const Route = createFileRoute("/browse")({
   head: () => ({
     meta: [
@@ -52,7 +51,6 @@ function BrowsePage() {
     });
   }, [query, sort, library]);
 
-
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-5 pb-20 pt-8">
       <header className="flex items-center justify-between">
@@ -60,8 +58,8 @@ function BrowsePage() {
           to="/"
           className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />
-          A Classic Match
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />A Classic
+          Match
         </Link>
         <Link
           to="/list"

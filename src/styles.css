@@ -109,7 +109,6 @@
   --sidebar-ring: oklch(0.435 0.135 26);
 }
 
-
 .dark {
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
@@ -154,10 +153,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    background-image: radial-gradient(
-      oklch(0.78 0.03 78 / 0.35) 0.5px,
-      transparent 0.5px
-    );
+    background-image: radial-gradient(oklch(0.78 0.03 78 / 0.35) 0.5px, transparent 0.5px);
     background-size: 4px 4px;
   }
 
@@ -167,4 +163,3 @@
     font-family: var(--font-serif);
   }
 }
-

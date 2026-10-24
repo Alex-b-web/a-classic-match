@@ -35,10 +35,12 @@ The main difference from Hostinger: Firebase has no file manager, so you can't e
 ## 3. Publish (5 min)
 
 In the project folder:
+
 ```bash
 npx firebase-tools@14 login        # opens a browser to sign in with your Google account
 npm run deploy:firebase            # builds the site and publishes it
 ```
+
 The site is now live at `https://YOUR-PROJECT-ID.web.app`. Add that address to Supabase → **Authentication → URL Configuration → Redirect URLs** as `https://YOUR-PROJECT-ID.web.app/**`, so you can test sign-in there before moving the domain.
 
 Whenever you change anything, including `config.js`, run `npm run deploy:firebase` again. Firebase keeps every earlier version: **Hosting → Release history → Roll back** undoes a bad publish in one click.
@@ -99,13 +101,13 @@ Whenever you change anything, including `config.js`, push again and the site upd
 
 ### What's in the code for Firebase
 
-| File | What it does |
-| --- | --- |
-| `firebase.json` | Publishes the `dist/client` folder and builds it first. It gives clean addresses (`/about`), shows `404.html` for unknown pages, makes pages and `config.js` always load fresh, and lets browsers cache the app files for a year. |
-| `.firebaserc` | Which Firebase project to publish to. |
-| `.github/workflows/firebase-hosting.yml` | Automatic deploy of the website and Firestore rules on every push to `main`. |
-| `firestore.rules` | Who may read and write the Firestore database. Currently everything is locked. |
-| `firestore.indexes.json` | Search indexes for Firestore (none yet). |
-| `package.json` → `deploy:firebase` | The one command for publishing by hand. |
+| File                                     | What it does                                                                                                                                                                                                                      |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `firebase.json`                          | Publishes the `dist/client` folder and builds it first. It gives clean addresses (`/about`), shows `404.html` for unknown pages, makes pages and `config.js` always load fresh, and lets browsers cache the app files for a year. |
+| `.firebaserc`                            | Which Firebase project to publish to.                                                                                                                                                                                             |
+| `.github/workflows/firebase-hosting.yml` | Automatic deploy of the website and Firestore rules on every push to `main`.                                                                                                                                                      |
+| `firestore.rules`                        | Who may read and write the Firestore database. Currently everything is locked.                                                                                                                                                    |
+| `firestore.indexes.json`                 | Search indexes for Firestore (none yet).                                                                                                                                                                                          |
+| `package.json` → `deploy:firebase`       | The one command for publishing by hand.                                                                                                                                                                                           |
 
 `public/.htaccess` is only used by Hostinger. Firebase ignores it, and it's left in so the same code still works on either host.

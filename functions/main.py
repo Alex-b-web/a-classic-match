@@ -11,7 +11,7 @@ The document holds "state", the same JSON the app keeps for a reader (log, remin
 import logging
 
 from firebase_admin import auth, firestore, initialize_app
-from firebase_functions import https_fn, options, scheduler_fn
+from firebase_functions import https_fn, scheduler_fn
 from firebase_functions.params import SecretParam, StringParam
 from google.cloud.firestore_v1.base_query import FieldFilter
 

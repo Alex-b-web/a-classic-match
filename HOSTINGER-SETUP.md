@@ -2,12 +2,12 @@
 
 This version of the site no longer needs Lovable. Four services each do one job:
 
-| Service | What it does | Cost |
-| --- | --- | --- |
-| **Hostinger** | Holds the website files (pages, pictures, logo) | Your current plan (any plan works) |
-| **Supabase** | Accounts, sign-in links, saved reading data, and the small "functions" that send the welcome and reminder emails | Free plan is enough to start |
-| **Resend** | Actually delivers the emails, from `hello@aclassicmatch.com` | Free up to 3,000 emails a month |
-| **Outlook (GoDaddy)** | Where you read and answer replies to `hello@aclassicmatch.com` | Your current plan |
+| Service               | What it does                                                                                                     | Cost                               |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Hostinger**         | Holds the website files (pages, pictures, logo)                                                                  | Your current plan (any plan works) |
+| **Supabase**          | Accounts, sign-in links, saved reading data, and the small "functions" that send the welcome and reminder emails | Free plan is enough to start       |
+| **Resend**            | Actually delivers the emails, from `hello@aclassicmatch.com`                                                     | Free up to 3,000 emails a month    |
+| **Outlook (GoDaddy)** | Where you read and answer replies to `hello@aclassicmatch.com`                                                   | Your current plan                  |
 
 **Why it said "Load failed".** That is Safari's way of saying "I couldn't reach the server". The old code was built to run on Lovable's servers. Sign-in and Apple login went through Lovable's own sign-in service, and the logo was stored on Lovable. None of that exists on Hostinger. This version removes every Lovable dependency.
 
@@ -28,6 +28,7 @@ Do the steps in order. Allow about an hour, plus waiting time for the domain che
 ## 2. Tell Supabase about your web address (2 min)
 
 **Authentication → URL Configuration**
+
 - **Site URL:** `https://www.aclassicmatch.com`
 - **Redirect URLs**, add both:
   - `https://www.aclassicmatch.com/**`
@@ -42,7 +43,8 @@ Without this, the link in the sign-in email can't bring people back to the site.
    - If the domain's nameservers are still **GoDaddy**: GoDaddy → My Products → Domain → **DNS**.
    - If you pointed the nameservers to **Hostinger**: hPanel → **Domains → DNS / Nameservers**.
 
-   **Important for Outlook:** only *add* records. Never delete or change the existing **MX**, **autodiscover** or Microsoft **SPF** (`v=spf1 … include:secureserver.net` / `spf.protection.outlook.com`) records. If you ever moved the nameservers to Hostinger, check that those Outlook records were copied across too, or `hello@` will stop receiving mail.
+   **Important for Outlook:** only _add_ records. Never delete or change the existing **MX**, **autodiscover** or Microsoft **SPF** (`v=spf1 … include:secureserver.net` / `spf.protection.outlook.com`) records. If you ever moved the nameservers to Hostinger, check that those Outlook records were copied across too, or `hello@` will stop receiving mail.
+
 3. Wait until Resend shows the domain as **Verified**. This is usually minutes, sometimes a few hours.
 4. **API Keys → Create API key** (Sending access). Copy it. It starts with `re_`.
 
@@ -50,16 +52,17 @@ Without this, the link in the sign-in email can't bring people back to the site.
 
 **Authentication → Emails → SMTP Settings** → turn on **Enable custom SMTP**:
 
-| Field | Value |
-| --- | --- |
-| Sender email | `hello@aclassicmatch.com` |
-| Sender name | `A Classic Match` |
-| Host | `smtp.resend.com` |
-| Port | `465` |
-| Username | `resend` |
-| Password | your Resend API key (`re_…`) |
+| Field        | Value                        |
+| ------------ | ---------------------------- |
+| Sender email | `hello@aclassicmatch.com`    |
+| Sender name  | `A Classic Match`            |
+| Host         | `smtp.resend.com`            |
+| Port         | `465`                        |
+| Username     | `resend`                     |
+| Password     | your Resend API key (`re_…`) |
 
 Then **Authentication → Emails → Templates**:
+
 - **Magic Link:** Subject `Your sign-in link for A Classic Match`. Body: paste all of `email-templates/magic-link.html`.
 - **Confirm signup** (used only when someone chooses a password): you can paste the same file, which uses the same link placeholder.
 
@@ -70,6 +73,7 @@ Finally, under **Authentication → Rate Limits**, raise **"Rate limit for sendi
 These are in `supabase/functions/`. Each one is a single file.
 
 For **each** of `delete-account`, `welcome-email` and `streak-reminders`:
+
 1. Supabase → **Edge Functions → Deploy a new function → Via Editor**.
 2. Name it **exactly** as above.
 3. Delete the sample code, paste the whole `index.ts` from that folder, and press **Deploy**.
@@ -77,14 +81,14 @@ For **each** of `delete-account`, `welcome-email` and `streak-reminders`:
 
 Then **Edge Functions → Secrets** → add:
 
-| Name | Value |
-| --- | --- |
-| `RESEND_API_KEY` | your Resend key (`re_…`) |
-| `CRON_SECRET` | a long random password you make up (for example 30+ letters and numbers). Keep a copy for step 6. |
-| `REMINDER_FROM` | `A Classic Match <hello@aclassicmatch.com>` |
-| `SITE_URL` | `https://www.aclassicmatch.com` |
+| Name             | Value                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| `RESEND_API_KEY` | your Resend key (`re_…`)                                                                          |
+| `CRON_SECRET`    | a long random password you make up (for example 30+ letters and numbers). Keep a copy for step 6. |
+| `REMINDER_FROM`  | `A Classic Match <hello@aclassicmatch.com>`                                                       |
+| `SITE_URL`       | `https://www.aclassicmatch.com`                                                                   |
 
-*Developer option:* instead of the dashboard, run `npx supabase login` and then `npx supabase functions deploy --project-ref YOUR-PROJECT-REF` from the project folder. Set `project_id` in `supabase/config.toml` first.
+_Developer option:_ instead of the dashboard, run `npx supabase login` and then `npx supabase functions deploy --project-ref YOUR-PROJECT-REF` from the project folder. Set `project_id` in `supabase/config.toml` first.
 
 ## 6. Switch on the hourly streak reminders (3 min)
 
@@ -115,21 +119,22 @@ Email sign-in works without this step. The Google button appears only after you 
 The return address Google needs is:
 `https://YOUR-PROJECT-REF.supabase.co/auth/v1/callback`
 
-- **Google (free):** Google Cloud Console → APIs & Services → **Credentials → Create OAuth client ID → Web application**. Add the return address above under *Authorised redirect URIs*. Copy the Client ID and Secret into Supabase → **Authentication → Sign In / Providers → Google** and switch it on. Then set `signInWith: ["google"]`.
+- **Google (free):** Google Cloud Console → APIs & Services → **Credentials → Create OAuth client ID → Web application**. Add the return address above under _Authorised redirect URIs_. Copy the Client ID and Secret into Supabase → **Authentication → Sign In / Providers → Google** and switch it on. Then set `signInWith: ["google"]`.
 
 Apple sign-in is not offered on the site.
 
 ## 9. Test it
 
 1. Open `https://www.aclassicmatch.com`. The book logo shows top-left.
-2. **Sign in → enter your email → Email me a sign-in link.** The email arrives from *A Classic Match*. Tap **Sign in** and you land back on the site, signed in.
+2. **Sign in → enter your email → Email me a sign-in link.** The email arrives from _A Classic Match_. Tap **Sign in** and you land back on the site, signed in.
 3. Within a minute the **welcome email** arrives, once only.
 4. On **Record**, switch on streak reminders and pick the next hour. Log nothing that day; the reminder arrives at that hour if you read the day before.
 5. Reply to any of the emails and check that the reply lands in the Outlook inbox for `hello@`.
 
 **If something fails:**
-- *"We couldn't reach the sign-in service"*: check the Supabase address in `config.js`.
-- *"This web address isn't allowed to sign in"*: check step 2.
+
+- _"We couldn't reach the sign-in service"_: check the Supabase address in `config.js`.
+- _"This web address isn't allowed to sign in"_: check step 2.
 - No email arrives: check that the Resend domain is Verified and that the SMTP settings in step 4 are correct. Resend → **Emails** shows every message and whether it was delivered.
 - Reminders: in Supabase → SQL Editor, run `select * from cron.job_run_details order by start_time desc limit 5;`.
 
@@ -143,4 +148,5 @@ Apple sign-in is not offered on the site.
 npm install
 npm run build        # outputs the site to dist/client
 ```
+
 Upload the contents of `dist/client` to `public_html`. Keep the edited `config.js` on the server; the build ships a blank one.

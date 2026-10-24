@@ -6,10 +6,18 @@ const KEY = "acm-cookie-notice-v1";
 export function SiteFooter() {
   return (
     <footer className="mx-auto flex w-full max-w-2xl flex-wrap gap-x-5 gap-y-2 border-t border-border px-5 py-8 text-xs uppercase tracking-widest text-muted-foreground">
-      <Link to="/about" className="hover:text-accent">About</Link>
-      <Link to="/privacy" className="hover:text-accent">Privacy</Link>
-      <Link to="/cookies" className="hover:text-accent">Cookies</Link>
-      <Link to="/account" className="hover:text-accent">Account</Link>
+      <Link to="/about" className="hover:text-accent">
+        About
+      </Link>
+      <Link to="/privacy" className="hover:text-accent">
+        Privacy
+      </Link>
+      <Link to="/cookies" className="hover:text-accent">
+        Cookies
+      </Link>
+      <Link to="/account" className="hover:text-accent">
+        Account
+      </Link>
     </footer>
   );
 }
@@ -31,7 +39,9 @@ export function CookieNotice() {
         <p className="flex-1 text-sm text-foreground">
           We only use essential storage to keep you signed in and remember your list, plan and
           reading log. No advertising or tracking cookies.{" "}
-          <Link to="/cookies" className="underline hover:text-accent">Learn more</Link>
+          <Link to="/cookies" className="underline hover:text-accent">
+            Learn more
+          </Link>
         </p>
         <button
           onClick={() => {

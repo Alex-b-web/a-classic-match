@@ -58,8 +58,8 @@ function ReadingPage() {
           to="/"
           className="flex items-center gap-2 font-serif text-sm uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />
-          A Classic Match
+          <img src="/logo.svg" alt="A Classic Match" className="size-7" loading="eager" />A Classic
+          Match
         </Link>
         <nav className="flex items-center gap-4">
           <Link
@@ -154,12 +154,7 @@ function ReadingPage() {
                 />
                 {last7.map((d, i) => (
                   <g key={d.date}>
-                    <circle
-                      cx={i * (280 / 6)}
-                      cy={y(d.pages)}
-                      r="3.5"
-                      className="fill-accent"
-                    />
+                    <circle cx={i * (280 / 6)} cy={y(d.pages)} r="3.5" className="fill-accent" />
                     {d.pages > 0 && (
                       <text
                         x={i * (280 / 6)}
@@ -258,9 +253,7 @@ function ReadingPage() {
                         inputMode="numeric"
                         placeholder="Pages"
                         value={custom[b.id] ?? ""}
-                        onChange={(e) =>
-                          setCustom((c) => ({ ...c, [b.id]: e.target.value }))
-                        }
+                        onChange={(e) => setCustom((c) => ({ ...c, [b.id]: e.target.value }))}
                         className="w-20 rounded-full border border-border bg-background px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none"
                       />
                       <button

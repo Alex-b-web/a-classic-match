@@ -29,7 +29,9 @@ export function Achievements() {
   // Distinct centuries the reader has finished a classic from (BC years count separately).
   const centuries = new Set(
     finished.map(({ book }) =>
-      book.year < 0 ? `bc${Math.ceil(Math.abs(book.year) / 100)}` : String(Math.ceil(book.year / 100)),
+      book.year < 0
+        ? `bc${Math.ceil(Math.abs(book.year) / 100)}`
+        : String(Math.ceil(book.year / 100)),
     ),
   ).size;
 
@@ -54,7 +56,10 @@ export function Achievements() {
           {thisYear} of {goal} books
         </p>
         <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-border">
-          <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${pct}%` }} />
+          <div
+            className="h-full rounded-full bg-accent transition-all"
+            style={{ width: `${pct}%` }}
+          />
         </div>
         <label className="mt-3 flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
           Books this year
@@ -70,18 +75,19 @@ export function Achievements() {
 
       <h2 className="mt-10 font-serif text-xs uppercase tracking-[0.3em] text-accent">Badges</h2>
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {[...BADGES.map((b) => ({ ok: finished.length >= b.n, name: b.name, text: b.text })), ...extra].map(
-          (b) => (
-            <div
-              key={b.name}
-              className={`rounded-md border p-3 ${b.ok ? "border-accent bg-card" : "border-border opacity-50"}`}
-            >
-              <Award className={`size-5 ${b.ok ? "text-accent" : "text-muted-foreground"}`} />
-              <p className="mt-1 font-serif text-base text-foreground">{b.name}</p>
-              <p className="text-xs text-muted-foreground">{b.text}</p>
-            </div>
-          ),
-        )}
+        {[
+          ...BADGES.map((b) => ({ ok: finished.length >= b.n, name: b.name, text: b.text })),
+          ...extra,
+        ].map((b) => (
+          <div
+            key={b.name}
+            className={`rounded-md border p-3 ${b.ok ? "border-accent bg-card" : "border-border opacity-50"}`}
+          >
+            <Award className={`size-5 ${b.ok ? "text-accent" : "text-muted-foreground"}`} />
+            <p className="mt-1 font-serif text-base text-foreground">{b.name}</p>
+            <p className="text-xs text-muted-foreground">{b.text}</p>
+          </div>
+        ))}
       </div>
 
       <h2 className="mt-10 font-serif text-xs uppercase tracking-[0.3em] text-accent">
@@ -117,7 +123,7 @@ function RateCard({
 }: {
   title: string;
   author: string;
-  initial?: { stars: number; review: string };
+  initial?: { stars: number; review: string } | undefined;
   onSave: (stars: number, review: string) => void;
 }) {
   const [stars, setStars] = useState(initial?.stars ?? 0);
@@ -130,7 +136,9 @@ function RateCard({
       <div className="mt-2 flex gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} onClick={() => setStars(n)} aria-label={`${n} stars`}>
-            <Star className={`size-5 ${n <= stars ? "fill-accent text-accent" : "text-muted-foreground"}`} />
+            <Star
+              className={`size-5 ${n <= stars ? "fill-accent text-accent" : "text-muted-foreground"}`}
+            />
           </button>
         ))}
       </div>
