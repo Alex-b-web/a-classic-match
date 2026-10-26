@@ -10,6 +10,13 @@
  * "not set up" message instead.
  */
 window.ACM_CONFIG = {
+  // Amazon Associates tag for each store, e.g. GB: "yourname-21". Each Amazon country needs
+  // its own Associates account. A store with no tag gets a plain link (no commission).
+  amazonTags: {
+    GB: "",
+    US: "",
+    DE: "",
+  },
   firebase: {
     apiKey: "AIzaSyBAamRcGmq46ieARfpMielrC_kz7_V4C3g",
     authDomain: "aclassicmatch.firebaseapp.com",
