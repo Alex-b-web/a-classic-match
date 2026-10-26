@@ -39,18 +39,20 @@ export function detectStore(): StoreCode {
   return DEFAULT_STORE;
 }
 
-/** The Associates tag for a store, from config.js (amazonTags). Empty if not set. */
-function associateTag(store: StoreCode): string {
-  const tags = (window as unknown as { ACM_CONFIG?: { amazonTags?: Record<string, unknown> } })
-    .ACM_CONFIG?.amazonTags;
-  const tag = typeof tags?.[store] === "string" ? (tags[store] as string).trim() : "";
-  return /^[A-Za-z0-9-]+$/.test(tag) ? tag : "";
+/** The UK Associates tag from config.js (amazonTag). Empty if not set. */
+function associateTag(): string {
+  const tag = (window as unknown as { ACM_CONFIG?: { amazonTag?: unknown } }).ACM_CONFIG?.amazonTag;
+  const value = typeof tag === "string" ? tag.trim() : "";
+  return /^[A-Za-z0-9-]+$/.test(value) ? value : "";
 }
 
-export function amazonUrlFor(b: Book, store: StoreCode) {
-  const domain = (STORES[store] ?? STORES[DEFAULT_STORE]).domain;
-  const tag = associateTag(store);
+/**
+ * Every Buy link goes to amazon.co.uk with the UK tag. Amazon's global redirect then sends the
+ * shopper to their own local store and keeps the tag, so the commission lands in the UK account.
+ */
+export function amazonUrlFor(b: Book) {
   const params = new URLSearchParams({ k: `${b.title} ${b.author}`, i: "stripbooks" });
+  const tag = associateTag();
   if (tag) params.set("tag", tag);
-  return `https://www.${domain}/s?${params.toString()}`;
+  return `https://www.${STORES.GB.domain}/s?${params.toString()}`;
 }
