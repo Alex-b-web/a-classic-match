@@ -33,10 +33,62 @@ export function detectStore(): StoreCode {
   const locales = [navigator.language, ...(navigator.languages ?? [])];
   for (const locale of locales) {
     if (!locale) continue;
-    const region = locale.split("-")[1]?.toUpperCase();
+    const region = locale.split(/[-_@]/)[1]?.toUpperCase();
     if (region && region in STORES) return region as StoreCode;
   }
   return DEFAULT_STORE;
+}
+
+const COUNTRY_KEY = "acm-country";
+const COUNTRY_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * The reader's country code, from their connection (Cloudflare's trace page). Looked up once
+ * per device and remembered for 30 days. Returns null if the lookup fails or is slow.
+ */
+export async function lookupCountry(): Promise<string | null> {
+  try {
+    const saved = JSON.parse(localStorage.getItem(COUNTRY_KEY) ?? "null") as {
+      code?: unknown;
+      at?: unknown;
+    } | null;
+    if (
+      saved &&
+      typeof saved.code === "string" &&
+      typeof saved.at === "number" &&
+      Date.now() - saved.at < COUNTRY_TTL_MS
+    ) {
+      return saved.code;
+    }
+  } catch {
+    /* storage unavailable or not valid: look it up again */
+  }
+  try {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 3000);
+    const res = await fetch("https://www.cloudflare.com/cdn-cgi/trace", {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    window.clearTimeout(timer);
+    if (!res.ok) return null;
+    const match = (await res.text()).match(/^loc=([A-Z]{2})$/m);
+    if (!match) return null;
+    try {
+      localStorage.setItem(COUNTRY_KEY, JSON.stringify({ code: match[1], at: Date.now() }));
+    } catch {
+      /* storage unavailable: still use the country this time */
+    }
+    return match[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** The storefront for a reader's country, if Amazon has one. Otherwise the language guess. */
+export function storeForCountry(code: string | null): StoreCode {
+  if (code && code in STORES) return code as StoreCode;
+  return detectStore();
 }
 
 /** The Associates tag for a store, from config.js (amazonTags). Empty if not set. */
