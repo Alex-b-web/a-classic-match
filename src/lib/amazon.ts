@@ -39,7 +39,18 @@ export function detectStore(): StoreCode {
   return DEFAULT_STORE;
 }
 
+/** The Associates tag for a store, from config.js (amazonTags). Empty if not set. */
+function associateTag(store: StoreCode): string {
+  const tags = (window as unknown as { ACM_CONFIG?: { amazonTags?: Record<string, unknown> } })
+    .ACM_CONFIG?.amazonTags;
+  const tag = typeof tags?.[store] === "string" ? (tags[store] as string).trim() : "";
+  return /^[A-Za-z0-9-]+$/.test(tag) ? tag : "";
+}
+
 export function amazonUrlFor(b: Book, store: StoreCode) {
   const domain = (STORES[store] ?? STORES[DEFAULT_STORE]).domain;
-  return `https://www.${domain}/s?k=${encodeURIComponent(`${b.title} ${b.author}`)}&i=stripbooks`;
+  const tag = associateTag(store);
+  const params = new URLSearchParams({ k: `${b.title} ${b.author}`, i: "stripbooks" });
+  if (tag) params.set("tag", tag);
+  return `https://www.${domain}/s?${params.toString()}`;
 }
