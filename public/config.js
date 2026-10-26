@@ -10,12 +10,23 @@
  * "not set up" message instead.
  */
 window.ACM_CONFIG = {
-  // Amazon Associates tag for each store, e.g. GB: "yourname-21". Each Amazon country needs
-  // its own Associates account. A store with no tag gets a plain link (no commission).
+  // Amazon Associates tag for each store. Each store's Buy links go to that country's Amazon
+  // site with its tag. Ireland uses amazon.co.uk, so it uses the UK tag. Stores left empty get
+  // plain links (no commission).
   amazonTags: {
-    GB: "",
-    US: "",
-    DE: "",
+    GB: "tugcealex-21",
+    IE: "tugcealex-21",
+    US: "tugcealex-20",
+    CA: "tugcealex07-20",
+    AU: "tugcealex-22",
+    DE: "tugcealex0f-21",
+    FR: "tugcealex09-21",
+    ES: "tugcealex0b-21",
+    IT: "tugcealex06b-21",
+    NL: "tugcealex07-21",
+    SE: "tugcealex08-21",
+    PL: "tugcealex0d-21",
+    SG: "tugcealex09-22",
   },
   firebase: {
     apiKey: "AIzaSyBAamRcGmq46ieARfpMielrC_kz7_V4C3g",
