@@ -146,15 +146,18 @@ def install_firebase(context, calls):
     context.route(FS, lambda r: r.abort())
 
 
+AMAZON_TAGS = {"GB": "tugcealex-21", "US": "tugcealex-20", "ES": "tugcealex0b-21"}  # as in public/config.js
+
+
 def config_js(configured):
     fb = FB_CONFIG if configured else {
         "apiKey": "YOUR-WEB-API-KEY", "authDomain": f"{PROJECT}.firebaseapp.com",
         "projectId": PROJECT, "appId": "YOUR-WEB-APP-ID"}
-    return "window.ACM_CONFIG = " + json.dumps({"firebase": fb}) + ";"
+    return "window.ACM_CONFIG = " + json.dumps({"amazonTags": AMAZON_TAGS, "firebase": fb}) + ";"
 
 
 def new_context(browser, configured=None, storage=None):
-    context = browser.new_context(viewport={"width": 420, "height": 860}, device_scale_factor=2)
+    context = browser.new_context(viewport={"width": 420, "height": 860}, device_scale_factor=2, locale="en-US")
     context.route("**/covers.openlibrary.org/**", lambda r: r.fulfill(status=404, body=""))
     if configured is not None:
         context.route("**/config.js", lambda r: r.fulfill(
@@ -287,6 +290,37 @@ with sync_playwright() as p:
     page.goto(BASE + "/")
     page.wait_for_load_state("networkidle")
     page.screenshot(path=str(OUT / "home-quiz.png"))
+    context.close()
+    # 6. Buy links follow the reader's country (Cloudflare's connection check), not only the language
+    TRACE = "https://www.cloudflare.com/cdn-cgi/trace"
+
+    def first_buy_link(context):
+        page = context.new_page()
+        CURRENT_PAGE[0] = page
+        page.goto(BASE + "/")
+        page.wait_for_load_state("networkidle")
+        page.get_by_role("button", name=re.compile("Begin the quiz")).click()
+        page.wait_for_timeout(300)
+        for _ in range(9):
+            page.locator("main section button.w-full").first.click()
+            page.wait_for_timeout(150)
+        wait_for(lambda: page.locator("a[href*='amazon.']").count() > 0)
+        href = page.locator("a[href*='amazon.']").first.get_attribute("href") or ""
+        page.close()
+        return href
+
+    context = new_context(browser, configured=True)
+    context.route(TRACE, lambda r: r.fulfill(status=200, body="ip=203.0.113.7\nloc=ES\n", content_type="text/plain", headers=CORS))
+    href = first_buy_link(context)
+    check("reader in Spain gets amazon.es with the Spanish tag",
+          "amazon.es/" in href and "tag=tugcealex0b-21" in href, href[:90])
+    context.close()
+
+    context = new_context(browser, configured=True)
+    context.route(TRACE, lambda r: r.abort())
+    href = first_buy_link(context)
+    check("if the country lookup fails, the browser language decides (US)",
+          "amazon.com/" in href and "tag=tugcealex-20" in href, href[:90])
     context.close()
     browser.close()
 

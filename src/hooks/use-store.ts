@@ -1,11 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_STORE, detectStore, STORES, type StoreCode } from "@/lib/amazon";
+import {
+  DEFAULT_STORE,
+  detectStore,
+  lookupCountry,
+  STORES,
+  storeForCountry,
+  type StoreCode,
+} from "@/lib/amazon";
 
 const KEY = "acm-store";
 
 /**
- * Which Amazon storefront buy links point at. Detected from the browser
- * locale, but the reader can override it — the choice is remembered locally.
+ * Which Amazon storefront buy links point at. Detected from the reader's country (looked up
+ * once per device), with the browser locale as the instant fallback. The reader can override
+ * it, and the choice is remembered locally.
  */
 export function useStore() {
   const [store, setStore] = useState<StoreCode>(DEFAULT_STORE);
@@ -21,9 +29,16 @@ export function useStore() {
     if (saved && saved in STORES) {
       setStore(saved as StoreCode);
       setOverridden(true);
-    } else {
-      setStore(detectStore());
+      return;
     }
+    setStore(detectStore());
+    let active = true;
+    void lookupCountry().then((code) => {
+      if (active) setStore(storeForCountry(code));
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const choose = useCallback((code: StoreCode) => {
